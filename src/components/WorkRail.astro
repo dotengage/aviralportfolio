@@ -1,0 +1,219 @@
+---
+import { cases, categoryLabel, type CaseCategory } from '../data/cases';
+import WorkCard from './WorkCard.astro';
+import Icon from './Icon.astro';
+
+const RAIL_CATS: CaseCategory[] = ['dotengage', 'personal-ugc'];
+const PAGE = 6;
+const items = cases.filter((c) => RAIL_CATS.includes(c.category));
+const filters = [
+  { id: 'all', label: 'All', count: items.length },
+  ...RAIL_CATS.map((id) => ({ id, label: categoryLabel(id), count: items.filter((c) => c.category === id).length })),
+];
+---
+
+<section class="rail" data-rail data-page={PAGE} aria-labelledby="rail-title">
+  <div class="rail__head wrap">
+    <div>
+      <span class="eyebrow">Agency · UGC · Case studies</span>
+      <h2 class="h-section" id="rail-title">Work</h2>
+    </div>
+    <div class="rail__filters" role="toolbar" aria-label="Filter work">
+      {
+        filters.map((f, i) => (
+          <button class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-rail-filter={f.id}>
+            {f.label} <span class="count">{f.count}</span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="rail__track" data-rail-track>
+    {items.map((item, i) => <WorkCard item={item} index={i} variant="rail" hidden={i >= PAGE} />)}
+    <div class="rail__end">
+      <button class="more" data-rail-more>
+        <span class="more__icon"><Icon name="plus" size={26} /></span>
+        <span class="more__label">Load more</span>
+      </button>
+      <a class="more more--link" href="/work">
+        <span class="more__icon"><Icon name="arrow-right" size={26} /></span>
+        <span class="more__label">See all work</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="rail__progress wrap" aria-hidden="true"><span data-rail-progress></span></div>
+</section>
+
+<style>
+  .rail {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(24px, 4vh, 44px);
+    padding-block: clamp(36px, 4.5vw, 60px);
+    overflow: hidden;
+  }
+  .rail:global(.is-pinned) {
+    height: 100vh;
+    padding-block: calc(var(--header-h) + 16px) 32px;
+  }
+  .rail__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+  }
+  .rail__head .h-section {
+    margin-top: 14px;
+  }
+  .rail__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .rail__track {
+    display: flex;
+    gap: clamp(14px, 2vw, 24px);
+    padding-inline: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .rail__track::-webkit-scrollbar {
+    display: none;
+  }
+  .rail:global(.is-pinned) .rail__track {
+    overflow: visible;
+    scroll-snap-type: none;
+    will-change: transform;
+  }
+  /* when pinned, size cards from the viewport height so the frame is filled, not padded */
+  .rail.is-pinned :global(.card--rail) {
+    width: clamp(220px, calc((100vh - 400px) * 0.8), 340px);
+  }
+  .rail__end {
+    flex: 0 0 auto;
+    display: grid;
+    gap: 12px;
+    width: clamp(180px, 18vw, 240px);
+    align-content: start;
+  }
+  .more {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    aspect-ratio: 4 / 5;
+    padding: 20px;
+    border-radius: var(--radius);
+    background: var(--text);
+    color: #fff;
+    text-align: left;
+    transition:
+      transform 0.5s var(--ease),
+      background-color 0.3s;
+  }
+  .more:hover {
+    transform: translateY(-4px);
+    background: var(--orange);
+  }
+  .more--link {
+    aspect-ratio: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: transparent;
+    color: var(--text);
+    box-shadow: inset 0 0 0 1.5px var(--line);
+  }
+  .more--link:hover {
+    background: var(--tint);
+  }
+  .more[hidden] {
+    display: none;
+  }
+  .rail__end:has(.more[hidden]) .more--link {
+    aspect-ratio: 4 / 5;
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--text);
+    color: #fff;
+    box-shadow: none;
+  }
+  .more__label {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .more--link .more__label {
+    font-size: 13px;
+  }
+  .rail__end:has(.more[hidden]) .more--link .more__label {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+  }
+  .rail__progress {
+    height: 2px;
+  }
+  .rail__progress span {
+    display: block;
+    height: 100%;
+    background: var(--orange);
+    transform-origin: left;
+    transform: scaleX(0);
+    box-shadow: 0 0 0 0.5px var(--line);
+  }
+  .rail__progress {
+    background: linear-gradient(var(--line), var(--line)) center / calc(100% - 2 * var(--gutter)) 100% no-repeat;
+  }
+</style>
+
+<script>
+  import { ScrollTrigger } from '../scripts/motion';
+  import { horizontalScroll } from '../scripts/hscroll';
+
+  document.querySelectorAll<HTMLElement>('[data-rail]').forEach((rail) => {
+    const track = rail.querySelector<HTMLElement>('[data-rail-track]')!;
+    const bar = rail.querySelector<HTMLElement>('[data-rail-progress]')!;
+    const more = rail.querySelector<HTMLButtonElement>('[data-rail-more]')!;
+    const cards = [...track.querySelectorAll<HTMLElement>('[data-case-open]')];
+    const PAGE = Number(rail.dataset.page) || 6;
+    let filter = 'all';
+    let shown = PAGE;
+
+    horizontalScroll(rail, track, (p) => (bar.style.transform = `scaleX(${p})`));
+
+    const render = () => {
+      const matching = cards.filter((c) => filter === 'all' || c.dataset.category === filter);
+      cards.forEach((c) => (c.hidden = true));
+      matching.slice(0, shown).forEach((c) => (c.hidden = false));
+      more.hidden = matching.length <= shown;
+      track.scrollLeft = 0;
+      ScrollTrigger.refresh();
+    };
+
+    more.addEventListener('click', () => {
+      shown += 4;
+      render();
+    });
+
+    rail.querySelectorAll<HTMLButtonElement>('[data-rail-filter]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        filter = btn.dataset.railFilter!;
+        shown = PAGE;
+        rail.querySelectorAll('[data-rail-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        render();
+      }),
+    );
+
+    render();
+  });
+</script>

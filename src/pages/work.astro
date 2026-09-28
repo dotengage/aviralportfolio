@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import CaseDialog from '../components/CaseDialog.astro';
+import { cases, categories } from '../data/cases';
+
+const filters = [
+  { id: 'all', label: 'All', count: cases.length },
+  ...categories.map((c) => ({ ...c, count: cases.filter((x) => x.category === c.id).length })),
+];
+---
+
+<Base title="Work & case studies" description="Case studies from Dot Engage, personal UGC and other projects by Aviral Jain.">
+  <section class="wrap work-hero">
+    <span class="eyebrow" data-reveal>Case studies · {cases.length}</span>
+    <h1 class="h-display" data-reveal>Work & <span class="accent">case studies</span></h1>
+    <p class="lede" data-reveal>
+      Strategy, creative direction and the videos that came out of it — for brands through Dot Engage, as a UGC creator
+      myself, and a few personal experiments. Tap any card to open the full story.
+    </p>
+  </section>
+
+  <section class="wrap work" data-work>
+    <div class="work__filters" role="toolbar" aria-label="Filter case studies" data-reveal>
+      {
+        filters.map((f, i) => (
+          <button class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-filter={f.id}>
+            {f.label} <span class="count">{f.count}</span>
+          </button>
+        ))
+      }
+    </div>
+    <div class="work__grid" data-work-grid>
+      {cases.map((item, i) => <WorkCard item={item} index={i} />)}
+    </div>
+    <p class="work__empty" data-work-empty hidden>Nothing here yet — check back soon.</p>
+  </section>
+
+  <CaseDialog />
+</Base>
+
+<style>
+  .work-hero {
+    display: grid;
+    gap: 22px;
+    padding-block: clamp(40px, 6vw, 88px) clamp(28px, 4vw, 44px);
+  }
+  .work {
+    padding-bottom: clamp(64px, 8vw, 112px);
+  }
+  .work__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: clamp(24px, 4vw, 40px);
+    position: sticky;
+    top: calc(var(--header-h) - 4px);
+    z-index: 5;
+    padding-block: 8px;
+    background: rgba(255, 255, 255, 0.92);
+  }
+  .work__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: clamp(28px, 3vw, 40px) clamp(16px, 2vw, 24px);
+  }
+  .work__empty {
+    padding: 60px 0;
+    text-align: center;
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, reduced } from '../scripts/motion';
+  import { Flip } from 'gsap/Flip';
+  gsap.registerPlugin(Flip);
+
+  const root = document.querySelector<HTMLElement>('[data-work]');
+  if (root) {
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-case-open]')];
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const empty = root.querySelector<HTMLElement>('[data-work-empty]')!;
+
+    const apply = (id: string, animate = true) => {
+      const state = animate && !reduced ? Flip.getState(cards) : null;
+      let n = 0;
+      cards.forEach((c) => {
+        const on = id === 'all' || c.dataset.category === id;
+        c.hidden = !on;
+        if (on) n++;
+      });
+      empty.hidden = n > 0;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === id)));
+      const url = new URL(location.href);
+      if (id === 'all') url.searchParams.delete('filter');
+      else url.searchParams.set('filter', id);
+      history.replaceState(null, '', url);
+      if (state) {
+        Flip.from(state, {
+          duration: 0.6,
+          ease: 'power3.inOut',
+          scale: true,
+          absolute: true,
+          onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5 }),
+          onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.9, duration: 0.3 }),
+          onComplete: () => ScrollTrigger.refresh(),
+        });
+      }
+    };
+
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter!)));
+    const initial = new URL(location.href).searchParams.get('filter');
+    if (initial && buttons.some((b) => b.dataset.filter === initial)) apply(initial, false);
+
+    // cards cascade in
+    if (!reduced) {
+      ScrollTrigger.batch(cards, {
+        start: 'top 92%',
+        once: true,
+        onEnter: (batch) => gsap.from(batch, { opacity: 0, y: 40, duration: 0.8, stagger: 0.07, ease: 'power3.out' }),
+      });
+    }
+  }
+</script>

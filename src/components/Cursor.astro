@@ -1,0 +1,66 @@
+<div class="cursor" aria-hidden="true">
+  <div class="cursor__dot"><span class="cursor__label"></span></div>
+</div>
+
+<style>
+  .cursor {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :global(html.has-cursor) .cursor {
+      display: block;
+    }
+  }
+  /* position wrapper — only translated, never resized */
+  .cursor__dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 300;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  /* the visible shape: a small orange square that morphs into a "Hi!" circle */
+  .cursor__label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    display: grid;
+    place-items: center;
+    translate: -50% -50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 1px #fff;
+    color: transparent;
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    transition:
+      width 0.35s var(--ease),
+      height 0.35s var(--ease),
+      border-radius 0.35s var(--ease),
+      scale 0.3s var(--ease),
+      color 0.2s;
+  }
+  :global(.cursor-hover) .cursor__label {
+    scale: 1.6;
+  }
+  :global(.cursor-down) .cursor__label {
+    scale: 0.75;
+  }
+  :global(.cursor-label) .cursor__label {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    scale: 1;
+    color: #fff;
+    box-shadow: 0 10px 24px -10px rgba(255, 95, 0, 0.8);
+  }
+  :global(.cursor-hidden) .cursor {
+    opacity: 0;
+  }
+</style>

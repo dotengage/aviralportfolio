@@ -1,0 +1,287 @@
+---
+import { Image } from 'astro:assets';
+import { projects } from '../data/projects';
+import Icon from './Icon.astro';
+---
+
+<div class="projects" data-projects>
+  {
+    projects.map((p, i) => (
+      <article class="project" data-project data-reveal>
+        <button
+          class="project__head"
+          aria-expanded="false"
+          aria-controls={`project-${p.slug}`}
+          data-project-toggle
+        >
+          <div class="project__shot">
+            <div class="browser">
+              <span />
+              <span />
+              <span />
+              <em>{new URL(p.url).host + new URL(p.url).pathname}</em>
+            </div>
+            <Image
+              src={p.image}
+              alt={`${p.name} dashboard screenshot`}
+              widths={[480, 800]}
+              sizes="(max-width: 760px) 92vw, 46vw"
+              loading={i === 0 ? 'eager' : 'lazy'}
+            />
+          </div>
+          <div class="project__meta">
+            <span class="project__num">0{i + 1}</span>
+            <div class="project__titles">
+              <h3 class="project__name">{p.name}</h3>
+              <p class="project__kind">{p.kind}</p>
+            </div>
+            <span class="project__plus" aria-hidden="true">
+              <Icon name="plus" size={22} />
+            </span>
+          </div>
+          <p class="project__one">{p.oneLiner}</p>
+        </button>
+
+        <div class="project__body" id={`project-${p.slug}`} role="region" aria-label={`${p.name} details`}>
+          <div class="project__inner">
+            <div class="project__cols">
+              <div>
+                <p class="project__desc">{p.description}</p>
+                <p class="project__for">
+                  <strong>Built for</strong> {p.builtFor}
+                </p>
+                <div class="project__tags">
+                  {p.tags.map((t) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+              <ul class="project__features">
+                {p.features.map((f) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+            </div>
+            <a class="btn" href={p.url} target="_blank" rel="noopener">
+              Open {p.name} <Icon name="arrow" size={16} class="arrow" />
+            </a>
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .projects {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 2.5vw, 28px);
+    align-items: start;
+  }
+  .project {
+    border-radius: var(--radius);
+    background: var(--tint);
+    overflow: hidden;
+    transition: box-shadow 0.4s var(--ease);
+  }
+  .project:hover {
+    box-shadow: 0 0 0 1.5px var(--line);
+  }
+  .project.is-open {
+    grid-column: 1 / -1;
+    box-shadow: 0 0 0 1.5px var(--text);
+  }
+  .project__head {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: clamp(14px, 2vw, 22px);
+  }
+  .project__shot {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 16px 36px -24px rgba(0, 0, 0, 0.35);
+    transform: translateZ(0);
+  }
+  .project__shot img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top left;
+    transition: transform 0.9s var(--ease);
+  }
+  .project:hover .project__shot img {
+    transform: scale(1.03);
+  }
+  .project.is-open .project__shot img {
+    aspect-ratio: 16 / 7;
+  }
+  .browser {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding-inline: 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--tint-2);
+  }
+  .browser span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--tint-2);
+  }
+  .browser em {
+    margin-left: 10px;
+    font-style: normal;
+    font-size: 11px;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .project__meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .project__num {
+    font-size: 12px;
+    font-weight: 700;
+    align-self: start;
+    padding-top: 6px;
+  }
+  .project__titles {
+    flex: 1;
+  }
+  .project__name {
+    font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .project__kind {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .project__plus {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--text);
+    color: #fff;
+    flex-shrink: 0;
+    transition: transform 0.5s var(--ease);
+  }
+  .project.is-open .project__plus {
+    transform: rotate(135deg);
+  }
+  .project__one {
+    margin-top: 10px;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+  .project__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.6s var(--ease);
+  }
+  .project.is-open .project__body {
+    grid-template-rows: 1fr;
+  }
+  .project__inner {
+    overflow: hidden;
+    padding-inline: clamp(14px, 2vw, 22px);
+  }
+  .project.is-open .project__inner {
+    padding-bottom: clamp(18px, 2.5vw, 28px);
+  }
+  .project__cols {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(20px, 4vw, 48px);
+    padding-top: 18px;
+    margin-bottom: 24px;
+    border-top: 1.5px solid var(--line);
+  }
+  .project__desc {
+    margin-bottom: 16px;
+  }
+  .project__for {
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+  .project__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .project__tags .tag {
+    background: #fff;
+  }
+  .project__features {
+    display: grid;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .project__features li {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+  }
+  .project__features li::before {
+    content: '→';
+    font-weight: 800;
+    color: var(--orange);
+  }
+  @media (max-width: 760px) {
+    .projects {
+      grid-template-columns: 1fr;
+    }
+    .project__cols {
+      grid-template-columns: 1fr;
+    }
+    .project.is-open .project__shot img {
+      aspect-ratio: 16 / 10;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, reduced } from '../scripts/motion';
+  import { Flip } from 'gsap/Flip';
+  gsap.registerPlugin(Flip);
+
+  document.querySelectorAll<HTMLElement>('[data-projects]').forEach((grid) => {
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-project]')];
+    cards.forEach((card) => {
+      const btn = card.querySelector<HTMLButtonElement>('[data-project-toggle]')!;
+      btn.addEventListener('click', () => {
+        const opening = !card.classList.contains('is-open');
+        const state = reduced ? null : Flip.getState(cards);
+        cards.forEach((c) => {
+          const on = c === card && opening;
+          c.classList.toggle('is-open', on);
+          c.querySelector('[data-project-toggle]')!.setAttribute('aria-expanded', String(on));
+        });
+        // opened card goes first so it spans the full row above the other
+        if (opening) grid.prepend(card);
+        else cards.forEach((c) => grid.append(c));
+        if (state) {
+          Flip.from(state, {
+            duration: 0.7,
+            ease: 'power3.inOut',
+            nested: true,
+            onComplete: () => ScrollTrigger.refresh(),
+          });
+        } else ScrollTrigger.refresh();
+      });
+    });
+  });
+</script>

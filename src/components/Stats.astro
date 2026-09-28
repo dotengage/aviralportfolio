@@ -1,0 +1,73 @@
+---
+import { stats } from '../data/experience';
+---
+
+<ul class="stats">
+  {
+    stats.map((s) => (
+      <li class="stat" data-reveal>
+        <span class="stat__value">
+          <span data-count={s.value}>{s.value}</span>
+          <span class="stat__suffix">{s.suffix}</span>
+        </span>
+        <span class="stat__label">{s.label}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1.5px solid var(--line);
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 24px 0 0;
+  }
+  .stat + .stat {
+    padding-left: clamp(20px, 4vw, 40px);
+    border-left: 1.5px solid var(--line);
+  }
+  .stat__value {
+    font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat__suffix {
+    color: var(--orange);
+  }
+  .stat__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, reduced } from '../scripts/motion';
+  if (!reduced) {
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+      const end = Number(el.dataset.count);
+      const obj = { v: 0 };
+      el.textContent = '0';
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 90%',
+        once: true,
+        onEnter: () =>
+          gsap.to(obj, {
+            v: end,
+            duration: 1.6,
+            ease: 'power3.out',
+            onUpdate: () => (el.textContent = String(Math.round(obj.v))),
+          }),
+      });
+    });
+  }
+</script>

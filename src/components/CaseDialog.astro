@@ -1,0 +1,378 @@
+---
+/**
+ * One <dialog> per page + an inert <template> per case study.
+ * Any element with [data-case-open="slug"] opens it; /work#slug deep-links.
+ */
+import { Image } from 'astro:assets';
+import { cases, categoryLabel } from '../data/cases';
+import ShortEmbed from './ShortEmbed.astro';
+import Icon from './Icon.astro';
+---
+
+<dialog class="case" data-case-dialog aria-labelledby="case-title" data-lenis-prevent>
+  <div class="case__sheet">
+    <button class="case__close" data-case-close aria-label="Close case study">
+      <Icon name="close" size={22} />
+    </button>
+    <div class="case__content" data-case-content></div>
+  </div>
+</dialog>
+
+{
+  cases.map((c) => (
+    <template data-case-template={c.slug}>
+      <article class="cs">
+        <header class="cs__head">
+          <div class="cs__tags">
+            <span class="tag">{categoryLabel(c.category)}</span>
+            <span class="tag">{c.year}</span>
+            {c.placeholder && <span class="ph-badge">PLACEHOLDER</span>}
+          </div>
+          <p class="cs__brand">{c.brand}</p>
+          <h2 class="cs__title" id="case-title">
+            {c.title}
+          </h2>
+          <p class="cs__summary">{c.summary}</p>
+        </header>
+
+        <div class:list={['cs__cover', !c.cover && 'ph']}>
+          {c.cover ? (
+            <Image src={c.cover} alt="" widths={[640, 1200]} sizes="(max-width: 900px) 92vw, 880px" />
+          ) : (
+            <span class="ph-badge">COVER IMAGE</span>
+          )}
+        </div>
+
+        <dl class="cs__facts">
+          <div>
+            <dt>Role</dt>
+            <dd>{c.role.join(', ')}</dd>
+          </div>
+          <div>
+            <dt>Deliverables</dt>
+            <dd>{c.deliverables.join(', ')}</dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>{categoryLabel(c.category)}</dd>
+          </div>
+        </dl>
+
+        <section class="cs__block">
+          <h3>The challenge</h3>
+          <p>{c.challenge}</p>
+        </section>
+        <section class="cs__block">
+          <h3>Strategy</h3>
+          <p>{c.strategy}</p>
+        </section>
+        <section class="cs__block">
+          <h3>Creative direction</h3>
+          <p>{c.creativeDirection}</p>
+        </section>
+
+        <ul class="cs__results">
+          {c.results.map((r) => (
+            <li>
+              <strong>{r.value}</strong>
+              <span>{r.label}</span>
+            </li>
+          ))}
+        </ul>
+
+        <section class="cs__block cs__block--wide">
+          <h3>The videos</h3>
+          <div class="cs__shorts">
+            {c.shorts.length ? (
+              c.shorts.map((id, i) => <ShortEmbed id={id} title={`${c.brand} — video ${i + 1}`} />)
+            ) : (
+              <>
+                <ShortEmbed />
+                <ShortEmbed />
+                <ShortEmbed />
+              </>
+            )}
+          </div>
+        </section>
+
+        {c.link && (
+          <a class="btn" href={c.link.href} target="_blank" rel="noopener">
+            {c.link.label} <Icon name="arrow" size={16} class="arrow" />
+          </a>
+        )}
+      </article>
+    </template>
+  ))
+}
+
+<style is:global>
+  .case {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+  .case::backdrop {
+    background: rgba(17, 17, 17, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .case[open].is-in::backdrop {
+    opacity: 1;
+  }
+  .case__sheet {
+    position: absolute;
+    inset: max(3vh, 16px) 0 0;
+    margin-inline: auto;
+    width: min(960px, 100%);
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -20px 60px -20px rgba(0, 0, 0, 0.35);
+    transform: translateY(100%);
+    transition: transform 0.6s var(--ease);
+    display: flex;
+    flex-direction: column;
+  }
+  .case.is-in .case__sheet {
+    transform: none;
+  }
+  .case__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--text);
+    color: #fff;
+    transition: transform 0.4s var(--ease);
+  }
+  .case__close:hover {
+    transform: rotate(90deg);
+  }
+  .case__content {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(24px, 5vw, 56px) clamp(16px, 5vw, 56px) 80px;
+  }
+
+  .cs {
+    display: grid;
+    gap: clamp(28px, 4vw, 44px);
+  }
+  .cs__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-right: 56px;
+  }
+  .cs__brand {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .cs__title {
+    font-size: clamp(1.8rem, 4.4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    text-transform: uppercase;
+    margin: 6px 0 16px;
+  }
+  .cs__summary {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 60ch;
+  }
+  .cs__cover {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 8;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .cs__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cs__facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 0;
+    padding-block: 18px;
+    border-block: 1.5px solid var(--line);
+  }
+  .cs__facts dt {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .cs__facts dd {
+    margin: 4px 0 0;
+    font-weight: 600;
+  }
+  .cs__block {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+  }
+  .cs__block h3 {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cs__block h3::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 8px 2px 0;
+    background: var(--orange);
+  }
+  .cs__block p {
+    max-width: 62ch;
+    font-size: 14.5px;
+  }
+  .cs__block--wide {
+    grid-template-columns: 1fr;
+  }
+  .cs__results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .cs__results li {
+    display: grid;
+    gap: 4px;
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--tint);
+  }
+  .cs__results strong {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .cs__results span {
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cs__shorts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: 760px) {
+    .cs__facts {
+      grid-template-columns: 1fr;
+    }
+    .cs__block {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .cs__shorts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  import { lenis } from '../scripts/motion';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-case-dialog]');
+  if (dialog) {
+    const content = dialog.querySelector<HTMLElement>('[data-case-content]')!;
+    const cursor = document.querySelector<HTMLElement>('.cursor');
+    let lastFocus: HTMLElement | null = null;
+
+    const open = (slug: string, push = true) => {
+      const tpl = document.querySelector<HTMLTemplateElement>(`template[data-case-template="${CSS.escape(slug)}"]`);
+      if (!tpl) return false;
+      lastFocus = document.activeElement as HTMLElement;
+      content.replaceChildren(tpl.content.cloneNode(true));
+      content.scrollTop = 0;
+      dialog.showModal();
+      cleaned = false;
+      // the dialog sits in the browser's top layer, above everything — bring the cursor along
+      if (cursor) dialog.append(cursor);
+      lenis?.stop();
+      requestAnimationFrame(() => dialog.classList.add('is-in'));
+      if (push) history.replaceState(null, '', `#${slug}`);
+      return true;
+    };
+
+    // runs once per close, whichever path closed the dialog
+    let cleaned = true;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      if (cursor) document.body.prepend(cursor);
+      lenis?.start();
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      lastFocus?.focus({ preventScroll: true });
+    };
+    const close = () => {
+      dialog.classList.remove('is-in');
+      setTimeout(() => {
+        dialog.close();
+        content.replaceChildren();
+        cleanup();
+      }, 450);
+    };
+    dialog.addEventListener('close', cleanup);
+    dialog.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      close();
+    });
+    dialog.querySelector('[data-case-close]')!.addEventListener('click', close);
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+
+    // lazy YouTube: swap the thumbnail for the iframe only when played
+    content.addEventListener('click', (e) => {
+      const btn = (e.target as Element).closest<HTMLElement>('[data-short]');
+      if (!btn) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.short}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      iframe.title = btn.getAttribute('aria-label') ?? 'YouTube video';
+      // a <button> can't hold interactive content — swap it for a div with the same attributes
+      const wrap = document.createElement('div');
+      for (const a of btn.attributes) if (!/^(data-short|data-cursor|aria-label)$/.test(a.name)) wrap.setAttribute(a.name, a.value);
+      wrap.append(iframe);
+      btn.replaceWith(wrap);
+    });
+
+    document.addEventListener('click', (e) => {
+      const trigger = (e.target as Element).closest<HTMLElement>('[data-case-open]');
+      if (!trigger || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      if (open(trigger.dataset.caseOpen!)) e.preventDefault();
+    });
+
+    const fromHash = () => {
+      const slug = decodeURIComponent(location.hash.slice(1));
+      if (slug) open(slug, false);
+    };
+    fromHash();
+  }
+</script>

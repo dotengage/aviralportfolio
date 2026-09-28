@@ -1,0 +1,26 @@
+---
+/** A transparent cut-out photo with a white + orange sticker border. */
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  class?: string;
+  sizes?: string;
+  eager?: boolean;
+}
+const { src, alt, class: cls, sizes = '(max-width: 760px) 80vw, 420px', eager = false } = Astro.props;
+---
+
+<div class:list={['sticker', cls]}>
+  <Image src={src} alt={alt} widths={[360, 560, 840]} sizes={sizes} loading={eager ? 'eager' : 'lazy'} />
+</div>
+
+<style>
+  .sticker img {
+    width: 100%;
+    filter: drop-shadow(0 0 0 #fff) drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff)
+      drop-shadow(0 -3px 0 #fff) drop-shadow(3px 0 0 var(--orange)) drop-shadow(-3px 0 0 var(--orange))
+      drop-shadow(0 3px 0 var(--orange)) drop-shadow(0 -3px 0 var(--orange));
+  }
+</style>

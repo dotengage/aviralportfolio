@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import { brands } from '../data/brands';
+
+interface Props {
+  speed?: number;
+}
+const { speed = 36 } = Astro.props;
+---
+
+<div class="strip" role="region" aria-label="Brands I have worked with">
+  <div class="marquee" style={`--speed:${speed}s`}>
+    {
+      [0, 1, 2].map((copy) => (
+        <ul class="marquee__track" aria-hidden={copy > 0 ? 'true' : undefined}>
+          {brands.map((b) => (
+            <li class="marquee__cell">
+              <Image
+                src={b.logo}
+                alt={copy ? '' : b.name}
+                height={b.h * 2}
+                style={`height:${b.h}px`}
+                loading="lazy"
+              />
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  /* Fixed-size cells: every logo gets the same box, so nothing can ever collide. */
+  .strip {
+    border-block: 1.5px solid var(--line);
+  }
+  .marquee {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    user-select: none;
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  }
+  .marquee__track {
+    flex: 0 0 auto;
+    display: flex;
+    animation: scroll var(--speed) linear infinite;
+  }
+  .marquee:hover .marquee__track {
+    animation-play-state: paused;
+  }
+  .marquee__cell {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: clamp(150px, 15vw, 200px);
+    height: 96px;
+    padding-inline: 24px;
+    border-right: 1.5px solid var(--line);
+  }
+  .marquee__cell :global(img) {
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.4s var(--ease);
+  }
+  .marquee__cell:hover :global(img) {
+    transform: scale(1.06);
+  }
+  @keyframes scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @media (max-width: 760px) {
+    .marquee__cell {
+      width: 130px;
+      height: 76px;
+      padding-inline: 18px;
+    }
+    .marquee__cell :global(img) {
+      scale: 0.8;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+    }
+    .marquee {
+      overflow-x: auto;
+    }
+  }
+</style>

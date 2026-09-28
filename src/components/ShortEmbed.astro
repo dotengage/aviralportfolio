@@ -1,0 +1,68 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  id?: string;
+  title?: string;
+}
+const { id, title = 'YouTube Short' } = Astro.props;
+---
+
+{
+  id ? (
+    <button class="short" data-short={id} aria-label={`Play: ${title}`}>
+      <img src={`https://i.ytimg.com/vi/${id}/oar2.jpg`} alt="" loading="lazy" decoding="async" />
+      <span class="short__play">
+        <Icon name="play" size={22} />
+      </span>
+    </button>
+  ) : (
+    <div class="short ph">
+      <span class="ph-badge">PLACEHOLDER</span>
+      <span class="short__hint">YouTube Short</span>
+    </div>
+  )
+}
+
+<style>
+  .short {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--tint);
+  }
+  .short img,
+  .short :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+  }
+  .short__play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.5);
+    transition: transform 0.4s var(--ease);
+  }
+  .short:hover .short__play {
+    transform: scale(1.1);
+  }
+  .short__hint {
+    font-size: 11px;
+    font-weight: 700;
+  }
+</style>

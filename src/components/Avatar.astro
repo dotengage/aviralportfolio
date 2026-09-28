@@ -1,0 +1,230 @@
+---
+/**
+ * Illustrated sticker of Aviral: a raster illustration (src/assets/avatar.png, eyes painted out)
+ * with live SVG eyes layered on top. Only the pupils / lids animate.
+ * The SVG viewBox matches the image's pixel size so coordinates line up 1:1.
+ */
+import { Image } from 'astro:assets';
+import art from '../assets/avatar.png';
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+const W = art.width;
+const H = art.height;
+// eye geometry in image pixels
+const eyes = [
+  { id: 'l', white: 'M325 440Q373 390 421 427Q373 476 325 440Z', lash: 'M319 442Q373 385 425 426', cx: 373, cy: 436 },
+  { id: 'r', white: 'M465 420Q509 382 553 420Q509 462 465 420Z', lash: 'M460 422Q509 377 558 419', cx: 509, cy: 423 },
+];
+---
+
+<div class:list={['avatar', cls]} data-avatar data-cursor="Hi!" data-w={W} data-h={H} style={`aspect-ratio:${W}/${H}`}>
+  <span class="avatar__bubble" data-bubble aria-hidden="true"></span>
+
+  <Image
+    src={art}
+    alt="Illustration of Aviral: curly hair, black blazer, holding a phone"
+    widths={[340, 520, 720]}
+    sizes="(max-width: 900px) 260px, 360px"
+    loading="eager"
+    fetchpriority="high"
+    class="avatar__art"
+    draggable="false"
+  />
+
+  <svg class="avatar__eyes" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <defs>
+      {
+        eyes.map((e) => (
+          <clipPath id={`eye-clip-${e.id}`}>
+            <path d={e.white} />
+          </clipPath>
+        ))
+      }
+    </defs>
+    {
+      eyes.map((e) => (
+        <g class="eye" data-eye data-cx={e.cx} data-cy={e.cy}>
+          <path d={e.white} fill="#fff" />
+          <g clip-path={`url(#eye-clip-${e.id})`}>
+            <g data-pupil>
+              <circle cx={e.cx} cy={e.cy} r="18" fill="#1A110E" />
+              <circle cx={e.cx - 5} cy={e.cy - 6} r="4.2" fill="#fff" />
+            </g>
+          </g>
+          <path d={e.lash} fill="none" stroke="#1D1512" stroke-width="8" stroke-linecap="round" />
+        </g>
+      ))
+    }
+  </svg>
+</div>
+
+<style>
+  .avatar {
+    position: relative;
+    width: 100%;
+    transform-origin: 50% 90%;
+    will-change: transform;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .avatar :global(.avatar__art),
+  .avatar__eyes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .avatar :global(.avatar__art) {
+    pointer-events: none;
+  }
+  .avatar :global(.eye) {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.09s ease-in;
+  }
+  .avatar :global(.eye.shut) {
+    transform: scaleY(0.08);
+  }
+  .avatar__bubble {
+    position: absolute;
+    top: 4%;
+    right: -4%;
+    z-index: 2;
+    padding: 8px 14px;
+    border-radius: 14px 14px 14px 2px;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 15px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(8px) scale(0.8);
+    transform-origin: 0 100%;
+    transition:
+      opacity 0.25s,
+      transform 0.45s var(--ease);
+    pointer-events: none;
+  }
+  .avatar__bubble.show {
+    opacity: 1;
+    transform: none;
+  }
+</style>
+
+<script>
+  import { reduced, finePointer } from '../scripts/motion';
+  import { greetings } from '../data/site';
+
+  // how far the iris can travel inside the eye, in image pixels
+  const MAX_X = 20;
+  const MAX_Y = 8;
+
+  document.querySelectorAll<HTMLElement>('[data-avatar]').forEach((root) => {
+    const svg = root.querySelector<SVGSVGElement>('.avatar__eyes')!;
+    const W = Number(root.dataset.w);
+    const H = Number(root.dataset.h);
+    const eyes = [...root.querySelectorAll<SVGGElement>('[data-eye]')];
+    const pupils = eyes.map((e) => e.querySelector<SVGGElement>('[data-pupil]')!);
+    const centers = eyes.map((e) => ({ x: Number(e.dataset.cx), y: Number(e.dataset.cy) }));
+
+    let target = { x: innerWidth / 2, y: innerHeight / 2 };
+    const cur = centers.map(() => ({ x: 0, y: 0 }));
+    let tilt = 0;
+    let raf = 0;
+    let visible = true;
+
+    const toScreen = (p: { x: number; y: number }, rect: DOMRect) => ({
+      x: rect.left + (p.x / W) * rect.width,
+      y: rect.top + (p.y / H) * rect.height,
+    });
+
+    const frame = () => {
+      raf = 0;
+      if (!visible) return;
+      const rect = svg.getBoundingClientRect();
+      let moving = false;
+      centers.forEach((c, i) => {
+        const s = toScreen(c, rect);
+        const dx = target.x - s.x;
+        const dy = target.y - s.y;
+        const d = Math.hypot(dx, dy) || 1;
+        const k = Math.min(1, d / 220);
+        const tx = (dx / d) * MAX_X * k;
+        const ty = (dy / d) * MAX_Y * k;
+        cur[i].x += (tx - cur[i].x) * 0.22;
+        cur[i].y += (ty - cur[i].y) * 0.22;
+        if (Math.abs(tx - cur[i].x) + Math.abs(ty - cur[i].y) > 0.05) moving = true;
+        pupils[i].setAttribute('transform', `translate(${cur[i].x.toFixed(2)} ${cur[i].y.toFixed(2)})`);
+      });
+      const head = toScreen({ x: W / 2, y: H * 0.4 }, rect);
+      const tt = Math.max(-1, Math.min(1, (target.x - head.x) / (innerWidth / 2))) * 3.5;
+      tilt += (tt - tilt) * 0.12;
+      if (Math.abs(tt - tilt) > 0.01) moving = true;
+      root.style.transform = `rotate(${tilt.toFixed(2)}deg)`;
+      if (moving) raf = requestAnimationFrame(frame);
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+
+    addEventListener(
+      'pointermove',
+      (e) => {
+        target = { x: e.clientX, y: e.clientY };
+        kick();
+      },
+      { passive: true },
+    );
+
+    new IntersectionObserver(([en]) => {
+      visible = en.isIntersecting;
+      if (visible) kick();
+    }).observe(root);
+
+    // touch devices: the eyes wander on their own until touched
+    if (!finePointer && !reduced) {
+      const wander = () => {
+        const rect = svg.getBoundingClientRect();
+        target = {
+          x: rect.left + rect.width * (0.5 + (Math.random() - 0.5) * 3),
+          y: rect.top + rect.height * (0.4 + (Math.random() - 0.5) * 1.6),
+        };
+        kick();
+      };
+      setInterval(wander, 1800);
+    }
+
+    // blink
+    const blink = (only?: number) => {
+      const set = only === undefined ? eyes : [eyes[only]];
+      set.forEach((e) => e.classList.add('shut'));
+      setTimeout(() => set.forEach((e) => e.classList.remove('shut')), only === undefined ? 130 : 320);
+    };
+    if (!reduced) {
+      const loop = () => {
+        blink();
+        setTimeout(loop, 2600 + Math.random() * 3200);
+      };
+      setTimeout(loop, 2400);
+    }
+
+    // say hi on click: wink + a greeting in one of the three languages
+    const bubble = root.querySelector<HTMLElement>('[data-bubble]')!;
+    let n = 0;
+    let hide = 0;
+    root.addEventListener('click', () => {
+      const g = greetings[n++ % greetings.length];
+      bubble.textContent = g.word;
+      bubble.lang = g.lang;
+      bubble.classList.toggle('deva', g.lang === 'hi');
+      bubble.classList.add('show');
+      blink(1);
+      clearTimeout(hide);
+      hide = window.setTimeout(() => bubble.classList.remove('show'), 1600);
+    });
+  });
+</script>

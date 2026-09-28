@@ -1,0 +1,372 @@
+---
+import Base from '../layouts/Base.astro';
+import Sticker from '../components/Sticker.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import fingerGuns from '../assets/photos/finger-guns.png';
+
+const services = ['UGC ads', 'Content strategy', 'Creative direction', 'Social media', 'Personal UGC', 'Something else'];
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+
+const channels = [
+  { icon: 'mail' as const, label: 'Email', value: site.email, href: `mailto:${site.email}` },
+  { icon: 'instagram' as const, label: 'Instagram', value: site.instagramHandle, href: site.instagram },
+  { icon: 'linkedin' as const, label: 'LinkedIn', value: site.linkedinHandle, href: site.linkedin },
+];
+---
+
+<Base title="Contact" description="Start a project with Aviral Jain — UGC ads, content strategy and creative direction.">
+  <section class="wrap contact">
+    <div class="contact__left">
+      <span class="eyebrow" data-reveal>Contact</span>
+      <h1 class="h-display" data-reveal>Let's <span class="accent">talk.</span></h1>
+      <p class="lede" data-reveal>
+        Tell me about your brand and what you want people to feel, do or buy. I usually reply within a day.
+      </p>
+
+      <form class="form" data-form data-reveal novalidate>
+        <input type="hidden" name="access_key" value={accessKey} />
+        <input type="hidden" name="subject" value="New enquiry from aviral portfolio" />
+        <input type="hidden" name="from_name" value="Portfolio contact form" />
+        <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        <div class="form__row">
+          <label class="field">
+            <span>Name *</span>
+            <input name="name" required autocomplete="name" placeholder="Your name" />
+          </label>
+          <label class="field">
+            <span>Email *</span>
+            <input name="email" type="email" required autocomplete="email" placeholder="you@brand.com" />
+          </label>
+        </div>
+        <label class="field">
+          <span>Brand / company</span>
+          <input name="company" autocomplete="organization" placeholder="Where do you work?" />
+        </label>
+
+        <fieldset class="field">
+          <legend>What do you need?</legend>
+          <div class="pills">
+            {
+              services.map((s) => (
+                <label class="pill">
+                  <input type="checkbox" name="services" value={s} />
+                  <span>{s}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+
+        <label class="field">
+          <span>Message *</span>
+          <textarea name="message" required rows="5" placeholder="What are you working on?"></textarea>
+        </label>
+
+        <div class="form__foot">
+          <button class="btn" type="submit" data-submit>
+            <span data-submit-label>Send message</span>
+            <Icon name="arrow" size={16} class="arrow" />
+          </button>
+          <p class="form__status" role="status" aria-live="polite" data-status></p>
+        </div>
+      </form>
+    </div>
+
+    <aside class="contact__right">
+      <div class="contact__photo" data-reveal>
+        <Sticker src={fingerGuns} alt="Aviral pointing finger guns at the camera" sizes="(max-width: 900px) 70vw, 380px" eager />
+      </div>
+      <ul class="channels">
+        {
+          channels.map((c) => (
+            <li data-reveal>
+              <a
+                class="channel"
+                href={c.href}
+                target={c.icon === 'mail' ? undefined : '_blank'}
+                rel={c.icon === 'mail' ? undefined : 'noopener'}
+              >
+                <span class="channel__icon">
+                  <Icon name={c.icon} size={22} />
+                </span>
+                <span class="channel__text">
+                  <span class="channel__label">{c.label}</span>
+                  <span class="channel__value">{c.value}</span>
+                </span>
+                <Icon name="arrow" size={18} class="channel__arrow" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="contact__where" data-reveal>
+        <Icon name="pin" size={16} /> Based in {site.location}, working with brands everywhere · <span data-clock data-tz={site.timezone}>--:--:--</span> IST
+      </p>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(40px, 7vw, 110px);
+    padding-block: clamp(40px, 6vw, 88px);
+  }
+  .contact__left {
+    display: grid;
+    gap: 22px;
+    align-content: start;
+  }
+  .form {
+    display: grid;
+    gap: 18px;
+    margin-top: 12px;
+  }
+  .form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .field {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .field > span,
+  .field legend {
+    padding: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field legend {
+    margin-bottom: 8px;
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--tint);
+    color: var(--text);
+    font: inherit;
+    font-size: 16px; /* no iOS zoom */
+    box-shadow: inset 0 0 0 1.5px transparent;
+    transition:
+      box-shadow 0.25s,
+      background-color 0.25s;
+    resize: vertical;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: #9a9a9a;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--text);
+  }
+  .field :user-invalid {
+    box-shadow: inset 0 0 0 1.5px #c0262d;
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    position: relative;
+  }
+  .pill input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .pill span {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    padding-inline: 16px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1.5px var(--line);
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
+  }
+  .pill:hover span {
+    box-shadow: inset 0 0 0 1.5px var(--text);
+  }
+  .pill input:checked + span {
+    background: var(--text);
+    color: #fff;
+    box-shadow: none;
+  }
+  .pill input:focus-visible + span {
+    outline: 2px solid var(--orange);
+    outline-offset: 2px;
+  }
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+  .form__status {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .form__status.is-error {
+    color: #c0262d;
+  }
+  [data-submit][disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .contact__right {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+  .contact__photo {
+    max-width: 380px;
+    justify-self: center;
+    margin-bottom: 8px;
+  }
+  .channel {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    background: var(--tint);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      transform 0.5s var(--ease);
+  }
+  .channel:hover {
+    background: var(--text);
+    color: #fff;
+    transform: translateX(6px);
+  }
+  .channel__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--text);
+  }
+  .channel__text {
+    display: grid;
+    min-width: 0;
+  }
+  .channel__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  .channel__value {
+    font-size: 15px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .contact__where {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 900px) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+    .contact__right {
+      order: -1;
+    }
+    .contact__photo {
+      max-width: 240px;
+    }
+  }
+  @media (max-width: 560px) {
+    .form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-form]');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const label = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const say = (msg: string, error = false) => {
+      status.textContent = msg;
+      status.classList.toggle('is-error', error);
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const data = new FormData(form);
+      if (!data.get('access_key')) {
+        say('The form isn’t connected yet — please email aviral@dotengage.in directly.', true);
+        return;
+      }
+      // join multi-select services into one readable line
+      const services = data.getAll('services').join(', ');
+      data.delete('services');
+      if (services) data.set('services', services);
+
+      submit.disabled = true;
+      label.textContent = 'Sending…';
+      say('');
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: data,
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) throw new Error(json.message || 'Something went wrong');
+        form.reset();
+        label.textContent = 'Sent ✓';
+        say('Thanks! Your message is in my inbox — talk soon.');
+      } catch (err) {
+        label.textContent = 'Send message';
+        say('Couldn’t send that. Please try again or email aviral@dotengage.in.', true);
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+</script>

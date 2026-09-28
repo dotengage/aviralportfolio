@@ -1,0 +1,48 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<section class="cta section" aria-labelledby="cta-title">
+  <div class="wrap">
+    <div class="cta__box" data-reveal>
+      <span class="eyebrow">Have a brand that deserves attention?</span>
+      <h2 class="cta__title" id="cta-title">
+        Let's make something people <span class="accent">stop for.</span>
+      </h2>
+      <div class="cta__links">
+        <a class="btn" href="/contact">Start a project <Icon name="arrow" size={16} class="arrow" /></a>
+        <a class="btn btn--ghost" href={site.instagram} target="_blank" rel="noopener">
+          <Icon name="instagram" size={18} />
+          {site.instagramHandle}
+        </a>
+        <a class="btn btn--ghost" href={site.linkedin} target="_blank" rel="noopener">
+          <Icon name="linkedin" size={18} /> LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta__box {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+    padding-top: clamp(40px, 6vw, 64px);
+    border-top: 1.5px solid var(--line);
+  }
+  .cta__title {
+    font-size: clamp(1.9rem, 4.4vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    max-width: 18ch;
+  }
+  .cta__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>

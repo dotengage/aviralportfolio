@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import Sticker from '../components/Sticker.astro';
+import fullDark from '../assets/photos/full-dark.png';
+---
+
+<Base title="Page not found">
+  <section class="wrap nf">
+    <div class="nf__photo">
+      <Sticker src={fullDark} alt="Aviral scratching his head" sizes="260px" eager />
+    </div>
+    <div class="nf__text">
+      <p class="nf__code">404</p>
+      <h1 class="h-display"><span class="deva" lang="hi">क्या लाइन?</span></h1>
+      <p class="lede">This page doesn't exist — even I'm confused. Let's get you back somewhere useful.</p>
+      <div class="nf__links">
+        <a class="btn" href="/">Go home</a>
+        <a class="btn btn--ghost" href="/work">See work</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: calc(100svh - var(--header-h) - 90px);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: clamp(24px, 6vw, 80px);
+    padding-block: 40px;
+  }
+  .nf__photo {
+    width: clamp(160px, 22vw, 260px);
+  }
+  .nf__photo :global(img) {
+    aspect-ratio: 1 / 1.4;
+    object-fit: cover;
+    object-position: 50% 0%;
+  }
+  .nf__text {
+    display: grid;
+    gap: 20px;
+  }
+  .nf__code {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+  }
+  .nf .h-display {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .nf__links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 700px) {
+    .nf {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+    .nf__links {
+      justify-content: center;
+    }
+  }
+</style>

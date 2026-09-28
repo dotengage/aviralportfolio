@@ -1,0 +1,704 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Sticker from '../components/Sticker.astro';
+import Icon from '../components/Icon.astro';
+import Cta from '../components/Cta.astro';
+import { site } from '../data/site';
+import { journey, roles, education, skillGroups, certifications, languages, posts } from '../data/experience';
+import sitting from '../assets/photos/sitting-blazer.png';
+import shades from '../assets/photos/bw-shades.png';
+---
+
+<Base title="About" description="The story so far: from a 14-year-old YouTuber in Bhopal to founding Dot Engage.">
+  <!-- intro -->
+  <section class="wrap intro">
+    <div class="intro__text">
+      <span class="eyebrow" data-reveal>About</span>
+      <h1 class="h-display" data-reveal>Obsessed with making things on the <span class="accent">internet.</span></h1>
+      <div class="intro__copy" data-reveal>
+        <p>
+          I was the kid who was always making things on the internet — and I never grew out of it. YouTube at 14, video
+          editing at 16, freelancing through COVID (enough to pay my own 12th-grade fees), then social media, websites
+          and marketing.
+        </p>
+        <p>
+          I led production at Ahmedabad's biggest TEDx, discovered UGC, got in front of the camera myself, and started <a
+            href={site.agency.url}
+            target="_blank"
+            rel="noopener">Dot Engage</a
+          > in my third year of college. Since then: 20+ brands, a Shark Tank-funded client, a lot of systems, and a lot
+          of mistakes I learned from.
+        </p>
+        <p>
+          I'm still figuring things out, but I know one thing: the fastest way to learn is by doing. So that's what I
+          keep doing.
+        </p>
+      </div>
+      <ul class="langs" data-reveal aria-label="Languages I speak">
+        {
+          languages.map((l) => (
+            <li>
+              <span class:list={['langs__word', l.name !== 'English' && 'deva']} lang={l.name === 'English' ? 'en' : 'hi'}>
+                {l.word}
+              </span>
+              <span class="langs__name">{l.name}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="intro__photo" data-reveal>
+      <Sticker src={sitting} alt="Aviral sitting in a chair wearing a blazer, smiling" eager />
+      <span class="intro__badge">Bhopal → Ahmedabad → the internet</span>
+    </div>
+  </section>
+
+  <!-- journey timeline -->
+  <section class="journey" aria-labelledby="journey-title" data-journey>
+    <div class="journey__bg" aria-hidden="true">
+      <Image src={shades} alt="" widths={[600, 1000]} sizes="50vw" class="journey__photo" />
+    </div>
+    <div class="wrap journey__inner">
+      <div class="journey__head">
+        <span class="eyebrow">Timeline</span>
+        <h2 class="h-section" id="journey-title">The journey so far</h2>
+      </div>
+      <ol class="timeline" data-timeline>
+        <span class="timeline__line" aria-hidden="true"><span data-timeline-fill></span></span>
+        {
+          journey.map((m) => (
+            <li class:list={['tl', `tl--${m.kind}`]} data-tl>
+              <span class="tl__dot" aria-hidden="true" />
+              <span class="tl__when">{m.when}</span>
+              <h3 class="tl__title">{m.title}</h3>
+              {m.place && <p class="tl__place">{m.place}</p>}
+              <ul class="tl__points">
+                {m.points.map((p) => (
+                  <li>{p}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- experience: horizontal -->
+  <section class="xp" aria-labelledby="xp-title" data-xp>
+    <div class="wrap xp__head">
+      <div>
+        <span class="eyebrow">Experience</span>
+        <h2 class="h-section" id="xp-title">Where I've worked</h2>
+      </div>
+      <span class="xp__hint">{roles.length} roles · scroll →</span>
+    </div>
+    <div class="xp__track" data-xp-track>
+      {
+        roles.map((r, i) => (
+          <article class="role">
+            <div class="role__top">
+              <span class="role__num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="role__dur">{r.duration}</span>
+            </div>
+            <p class="role__dates">{r.dates}</p>
+            <h3 class="role__title">{r.title}</h3>
+            <p class="role__company">
+              {r.url ? (
+                <a href={r.url} target="_blank" rel="noopener">
+                  {r.company} ↗
+                </a>
+              ) : (
+                r.company
+              )}
+              {r.location && <span> · {r.location}</span>}
+            </p>
+            <p class="role__summary">{r.summary}</p>
+            {r.skills.length > 0 && (
+              <div class="role__skills">
+                {r.skills.map((s) => (
+                  <span class="tag">{s}</span>
+                ))}
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+    <div class="wrap xp__bar" aria-hidden="true"><span data-xp-progress></span></div>
+  </section>
+
+  <!-- education + skills -->
+  <section class="wrap section edu-skills">
+    <div>
+      <span class="eyebrow" data-reveal>Education</span>
+      <ul class="edu">
+        {
+          education.map((e) => (
+            <li data-reveal>
+              <span class="edu__dates">{e.dates}</span>
+              <strong>{e.degree}</strong>
+              <span>{e.school}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <span class="eyebrow cert-title" data-reveal>Certifications</span>
+      <ul class="certs" data-reveal>
+        {certifications.map((c) => <li>{c}</li>)}
+      </ul>
+    </div>
+    <div>
+      <span class="eyebrow" data-reveal>Skills</span>
+      <div class="skills">
+        {
+          skillGroups.map((g) => (
+            <div class="skills__group" data-reveal>
+              <h3>{g.title}</h3>
+              <ul>
+                {g.items.map((s) => (
+                  <li class="tag">{s}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- linkedin posts -->
+  <section class="wrap posts-sec" aria-labelledby="posts-title">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">From LinkedIn</span>
+        <h2 class="h-section" id="posts-title">Things I've written</h2>
+      </div>
+      <a class="btn btn--ghost" href={site.linkedinActivity} target="_blank" rel="noopener">
+        <Icon name="linkedin" size={18} /> All posts <Icon name="arrow" size={16} class="arrow" />
+      </a>
+    </div>
+    <ul class="posts">
+      {
+        posts.map((p) => (
+          <li data-reveal>
+            <a class="post" href={site.linkedinActivity} target="_blank" rel="noopener">
+              <p class="post__hook">{p.hook}</p>
+              <p class="post__excerpt">{p.excerpt}</p>
+              <span class="post__stats">{p.stats}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Cta />
+</Base>
+
+<style>
+  /* intro */
+  .intro {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(32px, 6vw, 80px);
+    align-items: center;
+    padding-block: clamp(40px, 6vw, 88px);
+  }
+  .intro__text {
+    display: grid;
+    gap: 24px;
+  }
+  .intro .h-display {
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    max-width: 16ch;
+  }
+  .intro__copy {
+    display: grid;
+    gap: 14px;
+    max-width: 60ch;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .intro__copy a {
+    color: var(--text);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .langs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .langs li {
+    display: grid;
+    gap: 2px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: var(--tint);
+  }
+  .langs__word {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .langs__name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .intro__photo {
+    position: relative;
+    max-width: 460px;
+    justify-self: center;
+  }
+  .intro__badge {
+    position: absolute;
+    left: -6%;
+    bottom: 12%;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--text);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    rotate: -6deg;
+    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  /* journey */
+  .journey {
+    position: relative;
+    background: var(--dark);
+    color: #fff;
+    padding-block: clamp(56px, 7vw, 96px);
+    overflow: clip;
+  }
+  .journey__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .journey__photo {
+    position: sticky;
+    top: 0;
+    width: min(56vw, 760px);
+    height: 100vh;
+    object-fit: contain;
+    object-position: left bottom;
+    opacity: 0.35;
+    mix-blend-mode: luminosity;
+  }
+  .journey__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 40px;
+  }
+  .journey__head {
+    position: sticky;
+    top: calc(var(--header-h) + 40px);
+    align-self: start;
+  }
+  .journey__head .h-section {
+    margin-top: 14px;
+  }
+  .journey .eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .journey__head .h-section {
+    color: #fff;
+  }
+  .timeline {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 36px;
+    list-style: none;
+    display: grid;
+    gap: clamp(40px, 7vw, 72px);
+  }
+  .timeline__line {
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .timeline__line span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--orange);
+    transform-origin: top;
+    transform: scaleY(0);
+    box-shadow: 0 0 12px var(--orange);
+  }
+  .tl {
+    position: relative;
+  }
+  .tl__dot {
+    position: absolute;
+    left: -36px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--dark);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition:
+      background-color 0.4s,
+      border-color 0.4s,
+      box-shadow 0.4s;
+  }
+  .tl.is-active .tl__dot {
+    background: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 0 6px rgba(255, 95, 0, 0.25);
+  }
+  .tl__when {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+  .tl__title {
+    margin-top: 6px;
+    font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .tl__place {
+    margin-top: 4px;
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  .tl__points {
+    margin-top: 12px;
+    display: grid;
+    gap: 6px;
+    font-size: 13.5px;
+    opacity: 0.85;
+  }
+  .tl__points li::before {
+    content: '— ';
+    color: var(--orange);
+  }
+  .tl {
+    opacity: 0.35;
+    transition: opacity 0.5s;
+  }
+  .tl.is-active {
+    opacity: 1;
+  }
+  :global(html:not(.js)) .tl {
+    opacity: 1;
+  }
+
+  /* experience rail */
+  .xp {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(24px, 4vh, 40px);
+    padding-block: clamp(36px, 4.5vw, 60px);
+    overflow: hidden;
+  }
+  .xp.is-pinned {
+    height: 100vh;
+    padding-block: calc(var(--header-h) + 16px) 32px;
+  }
+  .xp__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px;
+  }
+  .xp__head .h-section {
+    margin-top: 14px;
+  }
+  .xp__hint {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .xp__track {
+    display: flex;
+    gap: clamp(14px, 2vw, 22px);
+    padding-inline: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .xp__track::-webkit-scrollbar {
+    display: none;
+  }
+  .xp.is-pinned .xp__track {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .role {
+    flex: 0 0 auto;
+    width: clamp(270px, 30vw, 400px);
+    min-height: clamp(320px, 48vh, 420px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: clamp(20px, 2.4vw, 28px);
+    border-radius: var(--radius);
+    background: var(--tint);
+    scroll-snap-align: start;
+    transition:
+      background-color 0.4s,
+      color 0.4s,
+      transform 0.5s var(--ease);
+  }
+  .role:first-child {
+    background: var(--text);
+    color: #fff;
+  }
+  .role:first-child .role__title,
+  .role:first-child .tag {
+    color: #fff;
+  }
+  .role:first-child .tag {
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .role:first-child .role__summary,
+  .role:first-child .role__top {
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .role:hover {
+    transform: translateY(-6px);
+  }
+  .role__top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .role__dates {
+    margin-top: auto;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .role__title {
+    font-size: clamp(1.2rem, 1.9vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .role__company {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .role__company a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .role__summary {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .role__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .role__skills .tag {
+    background: #fff;
+  }
+  .xp__bar {
+    height: 2px;
+    background: linear-gradient(var(--line), var(--line)) center / calc(100% - 2 * var(--gutter)) 100% no-repeat;
+  }
+  .xp__bar span {
+    display: block;
+    height: 100%;
+    background: var(--orange);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* education + skills */
+  .edu-skills {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: clamp(40px, 6vw, 96px);
+  }
+  .edu {
+    display: grid;
+    margin-top: 20px;
+  }
+  .edu li {
+    display: grid;
+    gap: 2px;
+    padding-block: 18px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .edu strong {
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .edu__dates {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .edu li > span:last-child {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .cert-title {
+    margin-top: 40px;
+  }
+  .certs {
+    margin-top: 16px;
+    display: grid;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .certs li::before {
+    content: '✺ ';
+    color: var(--orange);
+  }
+  .skills {
+    margin-top: 20px;
+    display: grid;
+    gap: 28px;
+  }
+  .skills__group h3 {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .skills__group ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skills__group .tag {
+    padding: 8px 14px;
+    font-size: 12px;
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+  .skills__group .tag:hover {
+    background: var(--text);
+    color: #fff;
+  }
+
+  /* posts */
+  .posts-sec {
+    padding-bottom: clamp(40px, 6vw, 80px);
+  }
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 16px;
+  }
+  .post {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--line);
+    transition:
+      box-shadow 0.3s,
+      transform 0.5s var(--ease),
+      background-color 0.3s;
+  }
+  .post:hover {
+    box-shadow: inset 0 0 0 1.5px var(--text);
+    transform: translateY(-4px);
+  }
+  .post__hook {
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+  .post__excerpt {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .post__stats {
+    margin-top: auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .intro,
+    .journey__inner,
+    .edu-skills {
+      grid-template-columns: 1fr;
+    }
+    .intro__photo {
+      order: -1;
+      max-width: 300px;
+    }
+    .journey__head {
+      position: static;
+    }
+    .journey__photo {
+      width: 100vw;
+      opacity: 0.18;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, reduced } from '../scripts/motion';
+  import { horizontalScroll } from '../scripts/hscroll';
+
+  // timeline: line fills with scroll, milestones light up as they pass the middle
+  const timeline = document.querySelector<HTMLElement>('[data-timeline]');
+  if (timeline) {
+    const fill = timeline.querySelector<HTMLElement>('[data-timeline-fill]')!;
+    const items = timeline.querySelectorAll<HTMLElement>('[data-tl]');
+    if (reduced) {
+      fill.style.transform = 'none';
+      items.forEach((i) => i.classList.add('is-active'));
+    } else {
+      gsap.to(fill, {
+        scaleY: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: timeline, start: 'top 55%', end: 'bottom 55%', scrub: 0.4 },
+      });
+      items.forEach((item) =>
+        ScrollTrigger.create({
+          trigger: item,
+          start: 'top 58%',
+          onEnter: () => item.classList.add('is-active'),
+          onLeaveBack: () => item.classList.remove('is-active'),
+        }),
+      );
+    }
+  }
+
+  const xp = document.querySelector<HTMLElement>('[data-xp]');
+  if (xp) {
+    const bar = xp.querySelector<HTMLElement>('[data-xp-progress]')!;
+    horizontalScroll(xp, xp.querySelector<HTMLElement>('[data-xp-track]')!, (p) => (bar.style.transform = `scaleX(${p})`));
+  }
+</script>
