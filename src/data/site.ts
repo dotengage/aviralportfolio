@@ -1,3 +1,7 @@
+/** Prefix an internal path with the deploy base (e.g. /aviralportfolio on GitHub Pages). */
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+export const url = (path: string) => BASE + (path.startsWith('/') ? path : `/${path}`);
+
 export const site = {
   name: 'Aviral Jain',
   short: 'Aviral',
@@ -11,7 +15,7 @@ export const site = {
   linkedinActivity: 'https://www.linkedin.com/in/aviraljain178/recent-activity/all/',
   agency: { name: 'Dot Engage', url: 'https://www.dotengage.in' },
   // Drop the file at public/resume.pdf
-  resume: '/resume.pdf',
+  resume: url('/resume.pdf'),
   role: 'Marketer · Creative Director · Creator',
   tagline: 'I help brands win on social media with content people actually stop scrolling for.',
   services: ['Marketing Strategy', 'Creative Direction', 'UGC & Content', 'Video Editing'],
@@ -27,9 +31,9 @@ export const greetings = [
 ];
 
 export const nav = [
-  { label: 'Home', href: '/' },
-  { label: 'Work', href: '/work' },
-  { label: 'About', href: '/about' },
+  { label: 'Home', href: url('/') },
+  { label: 'Work', href: url('/work') },
+  { label: 'About', href: url('/about') },
   { label: 'Resume', href: site.resume, external: true },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Contact', href: url('/contact') },
 ];

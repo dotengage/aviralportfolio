@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { categoryLabel, type CaseStudy } from '../data/cases';
 import Icon from './Icon.astro';
+import { url } from '../data/site';
 
 interface Props {
   item: CaseStudy;
@@ -13,7 +14,7 @@ const { item, index, variant = 'grid', hidden = false } = Astro.props;
 ---
 
 <a
-  href={`/work#${item.slug}`}
+  href={url(`/work#${item.slug}`)}
   class:list={['card', `card--${variant}`]}
   data-case-open={item.slug}
   data-category={item.category}

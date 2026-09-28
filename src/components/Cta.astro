@@ -1,5 +1,5 @@
 ---
-import { site } from '../data/site';
+import { site, url } from '../data/site';
 import Icon from './Icon.astro';
 ---
 
@@ -11,7 +11,7 @@ import Icon from './Icon.astro';
         Let's make something people <span class="accent">stop for.</span>
       </h2>
       <div class="cta__links">
-        <a class="btn" href="/contact">Start a project <Icon name="arrow" size={16} class="arrow" /></a>
+        <a class="btn" href={url('/contact')}>Start a project <Icon name="arrow" size={16} class="arrow" /></a>
         <a class="btn btn--ghost" href={site.instagram} target="_blank" rel="noopener">
           <Icon name="instagram" size={18} />
           {site.instagramHandle}

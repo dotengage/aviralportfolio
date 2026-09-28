@@ -1,9 +1,11 @@
 ---
-import { nav, site } from '../data/site';
+import { nav, site, url } from '../data/site';
 import Icon from './Icon.astro';
 
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const trim = (p: string) => p.replace(/\/$/, '');
+const path = trim(Astro.url.pathname);
+const home = trim(url('/'));
+const isActive = (href: string) => (trim(href) === home ? path === home : path.startsWith(trim(href)));
 ---
 
 <header class="header">

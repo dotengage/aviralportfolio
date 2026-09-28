@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Sticker from '../components/Sticker.astro';
+import { url } from '../data/site';
 import fullDark from '../assets/photos/full-dark.png';
 ---
 
@@ -14,8 +15,8 @@ import fullDark from '../assets/photos/full-dark.png';
       <h1 class="h-display"><span class="deva" lang="hi">क्या लाइन?</span></h1>
       <p class="lede">This page doesn't exist — even I'm confused. Let's get you back somewhere useful.</p>
       <div class="nf__links">
-        <a class="btn" href="/">Go home</a>
-        <a class="btn btn--ghost" href="/work">See work</a>
+        <a class="btn" href={url('/')}>Go home</a>
+        <a class="btn btn--ghost" href={url('/work')}>See work</a>
       </div>
     </div>
   </section>

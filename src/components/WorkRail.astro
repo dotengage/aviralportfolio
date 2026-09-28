@@ -2,6 +2,7 @@
 import { cases, categoryLabel, type CaseCategory } from '../data/cases';
 import WorkCard from './WorkCard.astro';
 import Icon from './Icon.astro';
+import { url } from '../data/site';
 
 const RAIL_CATS: CaseCategory[] = ['dotengage', 'personal-ugc'];
 const PAGE = 6;
@@ -36,7 +37,7 @@ const filters = [
         <span class="more__icon"><Icon name="plus" size={26} /></span>
         <span class="more__label">Load more</span>
       </button>
-      <a class="more more--link" href="/work">
+      <a class="more more--link" href={url('/work')}>
         <span class="more__icon"><Icon name="arrow-right" size={26} /></span>
         <span class="more__label">See all work</span>
       </a>

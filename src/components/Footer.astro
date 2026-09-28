@@ -1,5 +1,5 @@
 ---
-import { site } from '../data/site';
+import { site, url } from '../data/site';
 import Icon from './Icon.astro';
 ---
 
@@ -12,7 +12,7 @@ import Icon from './Icon.astro';
       <Icon name="linkedin" size={18} /><span>LinkedIn</span>
     </a>
   </div>
-  <a class="footer__status" href="/contact"><span class="dot" aria-hidden="true"></span>Available for projects</a>
+  <a class="footer__status" href={url('/contact')}><span class="dot" aria-hidden="true"></span>Available for projects</a>
   <p class="footer__copy">© 2026 {site.short}</p>
 </footer>
 
