@@ -1,3 +1,5 @@
+import settings from '../content/settings.json';
+
 /** Prefix an internal path with the deploy base (e.g. /aviralportfolio on GitHub Pages). */
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 export const url = (path: string) => BASE + (path.startsWith('/') ? path : `/${path}`);
@@ -14,8 +16,8 @@ export const site = {
   linkedinHandle: 'in/aviraljain178',
   linkedinActivity: 'https://www.linkedin.com/in/aviraljain178/recent-activity/all/',
   agency: { name: 'Dot Engage', url: 'https://www.dotengage.in' },
-  // Drop the file at public/resume.pdf
-  resume: url('/resume.pdf'),
+  // uploaded from the dashboard (src/content/settings.json); falls back to public/resume.pdf
+  resume: url(settings.resume || '/resume.pdf'),
   role: 'Marketer · Creative Director · Creator',
   tagline: 'I help brands win on social media with content people actually stop scrolling for.',
   services: ['Marketing Strategy', 'Creative Direction', 'UGC & Content', 'Video Editing'],

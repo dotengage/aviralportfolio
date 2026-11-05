@@ -1,7 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import { testimonials } from '../data/testimonials';
 
-const items = testimonials.filter((t) => !t.placeholder);
+const items = testimonials;
 // second row starts halfway through so the two rows never show the same card side by side
 const half = Math.ceil(items.length / 2);
 const rows = [items, [...items.slice(half), ...items.slice(0, half)]];
@@ -33,7 +34,11 @@ const initials = (name: string) =>
                   </svg>
                   <blockquote>{t.quote}</blockquote>
                   <div class="quote__who">
-                    <span class="quote__avatar">{initials(t.name)}</span>
+                    {t.photo ? (
+                      <Image src={t.photo} alt="" width={76} height={76} class="quote__avatar quote__avatar--img" loading="lazy" />
+                    ) : (
+                      <span class="quote__avatar">{initials(t.name)}</span>
+                    )}
                     <span>
                       <strong>{t.name}</strong>
                       <span class="quote__role">
@@ -131,6 +136,10 @@ const initials = (name: string) =>
     color: #fff;
     font-size: 12px;
     font-weight: 800;
+  }
+  .quote__avatar--img {
+    object-fit: cover;
+    background: var(--tint-2);
   }
   @media (prefers-reduced-motion: reduce) {
     .testi__row {

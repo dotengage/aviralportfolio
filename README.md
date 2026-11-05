@@ -1,35 +1,39 @@
 # Aviral Jain — Portfolio
 
-Astro + GSAP static site. Zero framework runtime; ~65 KB gzipped JS in total.
+Astro + GSAP static site, hosted on GitHub Pages: https://dotengage.github.io/aviralportfolio/
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321
+npm run dev      # http://localhost:4321/aviralportfolio/
 npm run build    # static output in dist/
 ```
 
-## Editing content
+## Editing content — the dashboard
 
-Everything lives in `src/data/` — no code changes needed.
+Open **https://app.pagescms.org**, sign in with GitHub and pick `dotengage/aviralportfolio`.
+Every save commits to `main`, and the site redeploys in about a minute.
 
-| What | File |
+| Dashboard section | Stored in |
 | --- | --- |
-| Email, socials, tagline, greeting words, nav | `src/data/site.ts` |
-| Brand strip (add `logo` imports to switch names → logos) | `src/data/brands.ts` |
-| SaaS projects (CAT Monitor, Creator OS) | `src/data/projects.ts` |
-| **Case studies + YouTube Shorts** | `src/data/cases.ts` (instructions at the top) |
-| Testimonials | `src/data/testimonials.ts` |
-| Timeline, experience, education, skills, posts, stats | `src/data/experience.ts` |
+| Case studies (rich text, cover, gallery, YouTube Shorts, results, show-on-home, draft) | `src/content/cases/*.md` |
+| Testimonials | `src/content/testimonials.json` |
+| Brand logos | `src/content/brands.json` |
+| About & experience (bio, photos, timeline, roles, education, skills, certifications, posts) | `src/content/about.json` |
+| Resume PDF | `src/content/settings.json` → file in `public/uploads/` |
 
-- **Resume:** drop the PDF at `public/resume.pdf`.
-- **Photos:** `src/assets/photos/` (transparent PNG cut-outs; Astro converts them to WebP automatically).
-- **Case study covers:** put images in `src/assets/cases/` and import them in `cases.ts`.
+Uploaded images go to `src/assets/uploads/` and are optimised (WebP, responsive sizes) at build time.
+The dashboard is configured in `.pages.yml`.
+
+Still in code: site basics (`src/data/site.ts`), SaaS projects (`src/data/projects.ts`), homepage stats and
+languages (`src/data/experience.ts`).
 
 ## Contact form
 
-Uses [Web3Forms](https://web3forms.com). Create a free access key for `aviral@dotengage.in`, then set
-`PUBLIC_WEB3FORMS_KEY` in `.env` (local) and in Vercel → Project → Settings → Environment Variables.
+Uses [Web3Forms](https://web3forms.com). Create a free key for `aviral@dotengage.in` and add it as the repo
+variable `PUBLIC_WEB3FORMS_KEY` (Settings → Secrets and variables → Actions → Variables), then re-run the deploy.
 
-## Deploy (Vercel)
+## Custom domain
 
-Import the repo on Vercel — it auto-detects Astro. Update `site` in `astro.config.mjs` once the domain is live.
+1. Add the repo variable `CUSTOM_DOMAIN` (e.g. `aviral.in`) — same place as above.
+2. Settings → Pages → Custom domain → enter the domain, and add the DNS records GitHub shows at your registrar.
+3. Re-run the "Deploy to GitHub Pages" workflow. The `/aviralportfolio` base path drops away automatically.

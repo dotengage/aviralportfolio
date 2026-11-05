@@ -4,9 +4,14 @@
  * Any element with [data-case-open="slug"] opens it; /work#slug deep-links.
  */
 import { Image } from 'astro:assets';
-import { cases, categoryLabel } from '../data/cases';
+import { render } from 'astro:content';
+import { getCases, categoryLabel } from '../data/cases';
 import ShortEmbed from './ShortEmbed.astro';
 import Icon from './Icon.astro';
+
+const cases = await Promise.all(
+  (await getCases()).map(async (c) => ({ ...c, Content: (await render(c.entry)).Content })),
+);
 ---
 
 <dialog class="case" data-case-dialog aria-labelledby="case-title" data-lenis-prevent>
@@ -46,11 +51,11 @@ import Icon from './Icon.astro';
         <dl class="cs__facts">
           <div>
             <dt>Role</dt>
-            <dd>{c.role.join(', ')}</dd>
+            <dd>{c.role.join(', ') || '—'}</dd>
           </div>
           <div>
             <dt>Deliverables</dt>
-            <dd>{c.deliverables.join(', ')}</dd>
+            <dd>{c.deliverables.join(', ') || '—'}</dd>
           </div>
           <div>
             <dt>Category</dt>
@@ -58,27 +63,28 @@ import Icon from './Icon.astro';
           </div>
         </dl>
 
-        <section class="cs__block">
-          <h3>The challenge</h3>
-          <p>{c.challenge}</p>
-        </section>
-        <section class="cs__block">
-          <h3>Strategy</h3>
-          <p>{c.strategy}</p>
-        </section>
-        <section class="cs__block">
-          <h3>Creative direction</h3>
-          <p>{c.creativeDirection}</p>
-        </section>
+        <div class="cs__story">
+          <c.Content />
+        </div>
 
-        <ul class="cs__results">
-          {c.results.map((r) => (
-            <li>
-              <strong>{r.value}</strong>
-              <span>{r.label}</span>
-            </li>
-          ))}
-        </ul>
+        {c.results.length > 0 && (
+          <ul class="cs__results">
+            {c.results.map((r) => (
+              <li>
+                <strong>{r.value}</strong>
+                <span>{r.label}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {c.gallery.length > 0 && (
+          <div class="cs__gallery">
+            {c.gallery.map((img) => (
+              <Image src={img} alt="" widths={[480, 960]} sizes="(max-width: 760px) 92vw, 440px" loading="lazy" />
+            ))}
+          </div>
+        )}
 
         <section class="cs__block cs__block--wide">
           <h3>The videos</h3>
@@ -253,6 +259,79 @@ import Icon from './Icon.astro';
   }
   .cs__block--wide {
     grid-template-columns: 1fr;
+  }
+  /* rich text written in the dashboard */
+  .cs__story {
+    display: grid;
+    gap: 14px;
+    max-width: 68ch;
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+  .cs__story > * {
+    margin: 0;
+  }
+  .cs__story h2,
+  .cs__story h3 {
+    margin-top: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cs__story h2::before,
+  .cs__story h3::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 8px 2px 0;
+    background: var(--orange);
+  }
+  .cs__story h2:first-child,
+  .cs__story h3:first-child {
+    margin-top: 0;
+  }
+  .cs__story p,
+  .cs__story li {
+    color: var(--muted);
+  }
+  .cs__story strong {
+    color: var(--text);
+  }
+  .cs__story ul,
+  .cs__story ol {
+    padding-left: 1.2em;
+    display: grid;
+    gap: 6px;
+  }
+  .cs__story ul {
+    list-style: square;
+  }
+  .cs__story ol {
+    list-style: decimal;
+  }
+  .cs__story a {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cs__story blockquote {
+    padding-left: 16px;
+    border-left: 3px solid var(--orange);
+    font-style: italic;
+  }
+  .cs__gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 12px;
+  }
+  .cs__gallery img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 14px;
   }
   .cs__results {
     display: grid;

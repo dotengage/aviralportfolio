@@ -1,15 +1,9 @@
 /**
- * CASE STUDIES — the single source for the Work page, the home work rail
- * and every case-study dialog.
- *
- * HOW TO FILL ONE IN
- * 1. Copy an entry, give it a unique `slug` (lowercase-with-dashes).
- * 2. Pick a `category`:  'personal' | 'dotengage' | 'personal-ugc' | 'other'
- * 3. `shorts`: paste YouTube Shorts IDs — for youtube.com/shorts/AbC123xyz the ID is AbC123xyz
- * 4. `cover` (optional): put an image in src/assets/cases/ and import it at the top.
- * 5. Set `placeholder: false` (or delete the line) once it's real.
- * `featured: true` puts it on the home page rail (only dotengage / personal-ugc show there).
+ * CASE STUDIES — read from src/content/cases/*.md (edited in the Pages CMS dashboard).
+ * Single source for the Work page, the home work rail and every case-study dialog.
  */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { media, youtubeId } from '../lib/media';
 
 export type CaseCategory = 'personal' | 'dotengage' | 'personal-ugc' | 'other';
 
@@ -31,49 +25,44 @@ export interface CaseStudy {
   role: string[];
   deliverables: string[];
   summary: string;
-  challenge: string;
-  strategy: string;
-  creativeDirection: string;
   results: { value: string; label: string }[];
+  /** YouTube video IDs, parsed from whatever link was pasted */
   shorts: string[];
   cover?: ImageMetadata;
+  gallery: ImageMetadata[];
   link?: { label: string; href: string };
-  featured?: boolean;
-  placeholder?: boolean;
+  featured: boolean;
+  placeholder: boolean;
+  entry: CollectionEntry<'cases'>;
 }
 
-const template = (n: number, category: CaseCategory, featured = true): CaseStudy => ({
-  slug: `case-${String(n).padStart(2, '0')}`,
-  title: `Case study ${String(n).padStart(2, '0')}`,
-  brand: 'Brand name',
-  category,
-  year: '2025',
-  role: ['Strategy', 'Creative direction'],
-  deliverables: ['UGC ads', 'Scripts & hooks'],
-  summary: 'One line on what you did and the outcome. Shown on the card.',
-  challenge: 'What was the brand struggling with? Who were they trying to reach? (2–3 lines)',
-  strategy: 'Your plan: angles, hooks, creator selection, platforms, testing approach. (3–5 lines)',
-  creativeDirection:
-    'How you directed the creators: brief, tone, shot list, pacing, edits. What made it stop the scroll?',
-  results: [
-    { value: '0x', label: 'ROAS / result metric' },
-    { value: '0', label: 'Videos delivered' },
-    { value: '0%', label: 'Hook rate / CTR' },
-  ],
-  shorts: [],
-  featured,
-  placeholder: true,
-});
+let cache: CaseStudy[] | undefined;
 
-export const cases: CaseStudy[] = [
-  template(1, 'dotengage'),
-  template(2, 'dotengage'),
-  template(3, 'personal-ugc'),
-  template(4, 'dotengage'),
-  template(5, 'personal-ugc'),
-  template(6, 'dotengage'),
-  template(7, 'personal-ugc'),
-  template(8, 'personal', false),
-  template(9, 'personal', false),
-  template(10, 'other', false),
-];
+export async function getCases(): Promise<CaseStudy[]> {
+  if (cache) return cache;
+  const entries = await getCollection('cases', ({ data }) => !data.draft);
+  cache = entries
+    .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title))
+    .map((entry) => {
+      const d = entry.data;
+      return {
+        slug: entry.id,
+        title: d.title,
+        brand: d.brand,
+        category: d.category,
+        year: d.year,
+        role: d.role,
+        deliverables: d.deliverables,
+        summary: d.summary,
+        results: d.results.filter((r) => r.value || r.label),
+        shorts: d.shorts.map(youtubeId).filter((id): id is string => !!id),
+        cover: media(d.cover),
+        gallery: d.gallery.map(media).filter((img): img is ImageMetadata => !!img),
+        link: d.link?.href ? { label: d.link.label || 'View project', href: d.link.href } : undefined,
+        featured: d.featured,
+        placeholder: d.placeholder,
+        entry,
+      };
+    });
+  return cache;
+}

@@ -2,7 +2,9 @@
 import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import CaseDialog from '../components/CaseDialog.astro';
-import { cases, categories } from '../data/cases';
+import { getCases, categories } from '../data/cases';
+
+const cases = await getCases();
 
 const filters = [
   { id: 'all', label: 'All', count: cases.length },

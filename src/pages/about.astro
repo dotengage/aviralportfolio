@@ -5,9 +5,12 @@ import Sticker from '../components/Sticker.astro';
 import Icon from '../components/Icon.astro';
 import Cta from '../components/Cta.astro';
 import { site } from '../data/site';
-import { journey, roles, education, skillGroups, certifications, languages, posts } from '../data/experience';
-import sitting from '../assets/photos/sitting-blazer.png';
-import shades from '../assets/photos/bw-shades.png';
+import { aboutIntro, journey, roles, education, skillGroups, certifications, languages, posts } from '../data/experience';
+
+// last word of the headline gets the orange accent
+const words = aboutIntro.headline.trim().split(/\s+/);
+const headLast = words.pop() ?? '';
+const headStart = words.join(' ');
 ---
 
 <Base title="About" description="The story so far: from a 14-year-old YouTuber in Bhopal to founding Dot Engage.">
@@ -15,26 +18,10 @@ import shades from '../assets/photos/bw-shades.png';
   <section class="wrap intro">
     <div class="intro__text">
       <span class="eyebrow" data-reveal>About</span>
-      <h1 class="h-display" data-reveal>Obsessed with making things on the <span class="accent">internet.</span></h1>
-      <div class="intro__copy" data-reveal>
-        <p>
-          I was the kid who was always making things on the internet — and I never grew out of it. YouTube at 14, video
-          editing at 16, freelancing through COVID (enough to pay my own 12th-grade fees), then social media, websites
-          and marketing.
-        </p>
-        <p>
-          I led production at Ahmedabad's biggest TEDx, discovered UGC, got in front of the camera myself, and started <a
-            href={site.agency.url}
-            target="_blank"
-            rel="noopener">Dot Engage</a
-          > in my third year of college. Since then: 20+ brands, a Shark Tank-funded client, a lot of systems, and a lot
-          of mistakes I learned from.
-        </p>
-        <p>
-          I'm still figuring things out, but I know one thing: the fastest way to learn is by doing. So that's what I
-          keep doing.
-        </p>
-      </div>
+      <h1 class="h-display" data-reveal>
+        {headStart} <span class="accent">{headLast}</span>
+      </h1>
+      <div class="intro__copy" data-reveal set:html={aboutIntro.bio} />
       <ul class="langs" data-reveal aria-label="Languages I speak">
         {
           languages.map((l) => (
@@ -48,17 +35,25 @@ import shades from '../assets/photos/bw-shades.png';
         }
       </ul>
     </div>
-    <div class="intro__photo" data-reveal>
-      <Sticker src={sitting} alt="Aviral sitting in a chair wearing a blazer, smiling" eager />
-      <span class="intro__badge">Bhopal → Ahmedabad → the internet</span>
-    </div>
+    {
+      aboutIntro.photo && (
+        <div class="intro__photo" data-reveal>
+          <Sticker src={aboutIntro.photo} alt="Photo of Aviral" eager />
+          {aboutIntro.photoBadge && <span class="intro__badge">{aboutIntro.photoBadge}</span>}
+        </div>
+      )
+    }
   </section>
 
   <!-- journey timeline -->
   <section class="journey" aria-labelledby="journey-title" data-journey>
-    <div class="journey__bg" aria-hidden="true">
-      <Image src={shades} alt="" widths={[600, 1000]} sizes="50vw" class="journey__photo" />
-    </div>
+    {
+      aboutIntro.timelinePhoto && (
+        <div class="journey__bg" aria-hidden="true">
+          <Image src={aboutIntro.timelinePhoto} alt="" widths={[600, 1000]} sizes="50vw" class="journey__photo" />
+        </div>
+      )
+    }
     <div class="wrap journey__inner">
       <div class="journey__head">
         <span class="eyebrow">Timeline</span>
@@ -183,7 +178,7 @@ import shades from '../assets/photos/bw-shades.png';
       {
         posts.map((p) => (
           <li data-reveal>
-            <a class="post" href={site.linkedinActivity} target="_blank" rel="noopener">
+            <a class="post" href={p.link || site.linkedinActivity} target="_blank" rel="noopener">
               <p class="post__hook">{p.hook}</p>
               <p class="post__excerpt">{p.excerpt}</p>
               <span class="post__stats">{p.stats}</span>
@@ -221,7 +216,18 @@ import shades from '../assets/photos/bw-shades.png';
     font-size: 14px;
     color: var(--muted);
   }
-  .intro__copy a {
+  .intro__copy :global(p) {
+    margin: 0;
+  }
+  .intro__copy :global(ul),
+  .intro__copy :global(ol) {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .intro__copy :global(strong) {
+    color: var(--text);
+  }
+  .intro__copy :global(a) {
     color: var(--text);
     font-weight: 700;
     text-decoration: underline;

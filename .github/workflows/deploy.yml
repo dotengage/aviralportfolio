@@ -26,6 +26,8 @@ jobs:
         env:
           # Web3Forms keys are public by design; set it under Settings → Secrets and variables → Actions → Variables
           PUBLIC_WEB3FORMS_KEY: ${{ vars.PUBLIC_WEB3FORMS_KEY }}
+          # leave empty for dotengage.github.io/aviralportfolio; set (e.g. aviral.in) once a domain is connected
+          CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
 
   deploy:
     needs: build

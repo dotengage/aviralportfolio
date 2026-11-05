@@ -1,0 +1,10 @@
+[
+  { "name": "Blinkit", "logo": "src/assets/uploads/brands/blinkit.png", "height": 30 },
+  { "name": "Kraftshala", "logo": "src/assets/uploads/brands/kraftshala.png", "height": 46 },
+  { "name": "LIT School", "logo": "src/assets/uploads/brands/litschool.png", "height": 48 },
+  { "name": "MYPB", "logo": "src/assets/uploads/brands/mypb.svg", "height": 42 },
+  { "name": "DaMENSCH", "logo": "src/assets/uploads/brands/damensch.svg", "height": 22 },
+  { "name": "Clotrio", "logo": "src/assets/uploads/brands/clotrio.png", "height": 34 },
+  { "name": "Infare", "logo": "src/assets/uploads/brands/infare.png", "height": 38 },
+  { "name": "NIF Global", "logo": "src/assets/uploads/brands/nifglobal.png", "height": 46 }
+]

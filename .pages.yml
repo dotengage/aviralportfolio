@@ -1,0 +1,347 @@
+# Pages CMS dashboard — https://app.pagescms.org (sign in with GitHub, open dotengage/aviralportfolio).
+# Every save commits to `main`, which redeploys the site in about a minute.
+
+media:
+  - name: images
+    label: Images
+    input: src/assets/uploads
+    output: src/assets/uploads
+    categories: [image]
+    rename: safe
+  - name: files
+    label: Files
+    input: public/uploads
+    output: /uploads
+    categories: [document]
+    rename: safe
+
+content:
+  # ───────────────────────────── Case studies
+  - name: cases
+    label: Case studies
+    type: collection
+    path: src/content/cases
+    format: yaml-frontmatter
+    filename: '{primary}.md'
+    view:
+      fields: [title, brand, category, featured, draft]
+      primary: title
+      sort: [order, title, brand]
+      search: [title, brand, summary]
+      default:
+        sort: order
+        order: asc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: brand
+        label: Brand / client
+        type: string
+      - name: category
+        label: Category
+        type: select
+        options:
+          values:
+            - name: dotengage
+              label: Dot Engage (agency)
+            - name: personal-ugc
+              label: Personal UGC
+            - name: personal
+              label: Personal project
+            - name: other
+              label: Other
+      - name: year
+        label: Year
+        type: string
+      - name: summary
+        label: One-line summary
+        description: Shown on the card and at the top of the case study.
+        type: text
+      - name: cover
+        label: Cover image
+        type: image
+        options:
+          media: images
+          path: src/assets/uploads/cases
+      - name: shorts
+        label: YouTube Shorts links
+        description: Paste the full link, e.g. https://youtube.com/shorts/AbC123xyz
+        type: string
+        list: true
+      - name: body
+        label: The story
+        description: Use headings (The challenge, Strategy, Creative direction…), bold, lists and links.
+        type: rich-text
+        options:
+          format: markdown
+          media: false
+      - name: results
+        label: Results
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{value} — {label}'
+        fields:
+          - name: value
+            label: Number (e.g. 3.2x, 45+, 12%)
+            type: string
+          - name: label
+            label: What it measures
+            type: string
+      - name: gallery
+        label: Gallery images
+        type: image
+        options:
+          media: images
+          path: src/assets/uploads/cases
+          multiple:
+            max: 12
+      - name: role
+        label: My role
+        type: string
+        list: true
+      - name: deliverables
+        label: Deliverables
+        type: string
+        list: true
+      - name: link
+        label: External link (optional)
+        type: object
+        fields:
+          - name: label
+            label: Button text
+            type: string
+          - name: href
+            label: URL
+            type: string
+      - name: featured
+        label: Show on home page
+        description: Only Dot Engage and Personal UGC case studies appear in the home rail.
+        type: boolean
+      - name: order
+        label: Sort order
+        description: Lower numbers show first.
+        type: number
+      - name: draft
+        label: Hide (draft)
+        type: boolean
+
+  # ───────────────────────────── Testimonials
+  - name: testimonials
+    label: Testimonials
+    type: file
+    path: src/content/testimonials.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+      - name: role
+        label: Role
+        type: string
+      - name: company
+        label: Company
+        type: string
+      - name: quote
+        label: Quote
+        type: text
+        required: true
+      - name: photo
+        label: Photo (optional — initials are shown otherwise)
+        type: image
+        options:
+          media: images
+          path: src/assets/uploads/testimonials
+
+  # ───────────────────────────── Brand logos
+  - name: brands
+    label: Brand logos
+    type: file
+    path: src/content/brands.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Brand name
+        type: string
+        required: true
+      - name: logo
+        label: Logo (transparent PNG or SVG works best)
+        type: image
+        required: true
+        options:
+          media: images
+          path: src/assets/uploads/brands
+      - name: height
+        label: Display height (px)
+        description: Wide wordmarks ~22–34, stacked or square logos ~40–48.
+        type: number
+
+  # ───────────────────────────── About / Experience page
+  - name: about
+    label: About & experience
+    type: file
+    path: src/content/about.json
+    format: json
+    fields:
+      - name: headline
+        label: Headline
+        description: The last word is highlighted in orange.
+        type: string
+      - name: bio
+        label: Bio
+        type: rich-text
+        options:
+          format: html
+          media: false
+      - name: photo
+        label: Photo
+        type: image
+        options:
+          media: images
+          path: src/assets/uploads/about
+      - name: photoBadge
+        label: Badge on photo
+        type: string
+      - name: timelinePhoto
+        label: Timeline background photo
+        type: image
+        options:
+          media: images
+          path: src/assets/uploads/about
+      - name: journey
+        label: Timeline (oldest first)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{when} — {title}'
+        fields:
+          - name: when
+            label: When (e.g. 2024, Age 14, Now)
+            type: string
+          - name: title
+            label: Title
+            type: string
+          - name: place
+            label: Place / organisation
+            type: string
+          - name: kind
+            label: Type
+            type: select
+            options:
+              values: [life, education, work, build]
+          - name: points
+            label: Points
+            type: string
+            list: true
+      - name: roles
+        label: Experience (newest first — shown in the sideways scroll)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{title} — {company}'
+        fields:
+          - name: company
+            label: Company
+            type: string
+          - name: title
+            label: Role
+            type: string
+          - name: dates
+            label: Dates (e.g. Feb 2025 — Present)
+            type: string
+          - name: duration
+            label: Duration (e.g. 1 yr 8 mos)
+            type: string
+          - name: location
+            label: Location
+            type: string
+          - name: url
+            label: Website (optional)
+            type: string
+          - name: summary
+            label: Summary
+            type: text
+          - name: skills
+            label: Skills
+            type: string
+            list: true
+      - name: education
+        label: Education
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{degree} — {school}'
+        fields:
+          - name: school
+            label: School / college
+            type: string
+          - name: degree
+            label: Degree
+            type: string
+          - name: dates
+            label: Dates
+            type: string
+      - name: skillGroups
+        label: Skills
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{title}'
+        fields:
+          - name: title
+            label: Group name
+            type: string
+          - name: items
+            label: Skills
+            type: string
+            list: true
+      - name: certifications
+        label: Certifications
+        type: string
+        list: true
+      - name: posts
+        label: LinkedIn posts
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{hook}'
+        fields:
+          - name: hook
+            label: Opening line
+            type: string
+          - name: excerpt
+            label: Short excerpt
+            type: text
+          - name: stats
+            label: Stats (e.g. 184 reactions · 5.5K impressions)
+            type: string
+          - name: link
+            label: Post URL (optional)
+            type: string
+
+  # ───────────────────────────── Resume
+  - name: settings
+    label: Resume
+    type: file
+    path: src/content/settings.json
+    format: json
+    fields:
+      - name: resume
+        label: Resume PDF
+        description: Opens from the Resume tab in the menu.
+        type: file
+        options:
+          media: files
+          path: public/uploads
+          extensions: [pdf]

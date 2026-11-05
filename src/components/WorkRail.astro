@@ -1,12 +1,13 @@
 ---
-import { cases, categoryLabel, type CaseCategory } from '../data/cases';
+import { getCases, categoryLabel, type CaseCategory } from '../data/cases';
 import WorkCard from './WorkCard.astro';
 import Icon from './Icon.astro';
 import { url } from '../data/site';
 
 const RAIL_CATS: CaseCategory[] = ['dotengage', 'personal-ugc'];
 const PAGE = 6;
-const items = cases.filter((c) => RAIL_CATS.includes(c.category));
+// "Show on home page" in the dashboard picks what appears here
+const items = (await getCases()).filter((c) => c.featured && RAIL_CATS.includes(c.category));
 const filters = [
   { id: 'all', label: 'All', count: items.length },
   ...RAIL_CATS.map((id) => ({ id, label: categoryLabel(id), count: items.filter((c) => c.category === id).length })),
