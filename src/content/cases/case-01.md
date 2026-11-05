@@ -1,9 +1,9 @@
 ---
-title: Case study 01
-brand: Clotrio
+title: Clotrio
+brand: Case Study
 category: dotengage
 year: "2026"
-summary: Crazy crazy crazy!
+summary: An undergarment brand.
 cover: src/assets/uploads/cases/create-promotional-commercial-video-ads-for-your-business.png
 shorts:
   - https://www.youtube.com/shorts/5otCk-4fllU
