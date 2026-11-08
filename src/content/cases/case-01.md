@@ -26,7 +26,22 @@ featured: true
 order: 1
 draft: false
 ---
-## The challenge
+## The Boom Boom
+
+# Shakalaka
+
+## Yo Yo Honey Singh
+
+### Yipeee
+
+> Mai hoon ek udta robo, Doraemonnnn
+
+
+| Video Category | Video Angle Tested | Blah Blah Blah |
+| -------------- | ------------------ | -------------- |
+|  |  |  |
+|  |  |  |
+
 
 What was the brand struggling with? Who were they trying to reach? (2–3 lines)
 
@@ -37,3 +52,8 @@ Your plan: angles, hooks, creator selection, platforms, testing approach. (3–5
 ## Creative direction
 
 How you directed the creators: brief, tone, shot list, pacing, edits. What made it **stop the scroll**?
+
+> # Testimonial
+>
+> The video was amazing, sexy blah blah blah... ~Aviral Papa
+
