@@ -3,9 +3,10 @@ title: Clotrio
 brand: Case Study
 filters:
   - src/content/filters/dot-engage.json
+  - src/content/filters/lifestyle.json
 year: "2026"
 summary: An undergarment brand.
-cover: src/assets/uploads/cases/create-promotional-commercial-video-ads-for-your-business.png
+cover: src/assets/uploads/cases/undipendencesale22-recovered.webp
 shorts:
   - https://www.youtube.com/shorts/5otCk-4fllU
 results:
