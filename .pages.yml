@@ -101,7 +101,7 @@ content:
         type: string
         list: true
       - name: deliverables
-        label: Deliverables
+        label: Work delivered
         type: string
         list: true
       - name: link

@@ -60,12 +60,8 @@ const cases = await Promise.all(
             <dd>{c.role.join(', ') || '—'}</dd>
           </div>
           <div>
-            <dt>Deliverables</dt>
+            <dt>Work delivered</dt>
             <dd>{c.deliverables.join(', ') || '—'}</dd>
-          </div>
-          <div>
-            <dt>Filters</dt>
-            <dd>{c.names.join(', ') || '—'}</dd>
           </div>
         </dl>
 
@@ -248,7 +244,7 @@ const cases = await Promise.all(
   }
   .cs__facts {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin: 0;
     padding-block: 18px;
