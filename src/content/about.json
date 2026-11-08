@@ -1,14 +1,13 @@
 {
   "headline": "Obsessed with making things on the internet.",
-  "bio": "<p>I was the kid who was always making things on the internet — and I never grew out of it. YouTube at 14, video editing at 16, freelancing through COVID (enough to pay my own 12th-grade fees), then social media, websites and marketing.</p><p>I led production at Ahmedabad's biggest TEDx, discovered UGC, got in front of the camera myself, and started <a href=\"https://www.dotengage.in\" target=\"_blank\" rel=\"noopener\">Dot Engage</a> in my third year of college. Since then: 20+ brands, a Shark Tank-funded client, a lot of systems, and a lot of mistakes I learned from.</p><p>I'm still figuring things out, but I know one thing: the fastest way to learn is by doing. So that's what I keep doing.</p>",
+  "bio": "<p>I was the kid who was always making things on the internet — and I never grew out of it. YouTube at 14, video editing at 16, freelancing through COVID (enough to pay my own 12th-grade fees), then social media, websites and marketing.</p><p>I led production at Ahmedabad's biggest TEDx, discovered UGC, got in front of the camera myself, and started <a target=\"_blank\" rel=\"noopener\" href=\"https://www.dotengage.in\">Dot Engage</a> in my third year of college. Since then: 20+ brands, a Shark Tank-funded client, a lot of systems, and a lot of mistakes I learned from.</p><p>I'm still figuring things out, but I know one thing: the fastest way to learn is by doing. So that's what I keep doing.</p>",
   "photo": "src/assets/uploads/about/sitting-blazer.png",
-  "photoBadge": "Bhopal → Ahmedabad → the internet",
+  "photoBadge": "I win, that's what I do.",
   "timelinePhoto": "src/assets/uploads/about/bw-shades.png",
   "journey": [
     {
       "when": "Age 14",
       "title": "Started a YouTube channel",
-      "place": "",
       "kind": "life",
       "points": [
         "Wanted better videos, so I started teaching myself video editing."
@@ -17,7 +16,6 @@
     {
       "when": "Age 16",
       "title": "Learned editing professionally",
-      "place": "",
       "kind": "life",
       "points": [
         "Industry-standard software, real client-grade work."
@@ -64,7 +62,6 @@
     {
       "when": "2024",
       "title": "Founded DOT PNG Media",
-      "place": "",
       "kind": "build",
       "points": [
         "End-to-end social media services after 4+ years of digital storytelling."
@@ -94,7 +91,6 @@
     {
       "when": "2026",
       "title": "Presented research at NICOM 2026",
-      "place": "",
       "kind": "education",
       "points": [
         "“Generational Shift in Saving and Investing: Millennials vs Gen Z”."
@@ -103,7 +99,6 @@
     {
       "when": "Now",
       "title": "Still building",
-      "place": "",
       "kind": "build",
       "points": [
         "Scaling Dot Engage, making content and shipping small products like CAT Monitor and Creator OS."
@@ -116,7 +111,6 @@
       "title": "Founder",
       "dates": "Feb 2025 — Present",
       "duration": "1 yr 8 mos",
-      "location": "",
       "url": "https://www.dotengage.in",
       "summary": "Helping brands win on social media through conversion-focused video content — UGC ads, paid campaigns and everything in between. 20+ brands served.",
       "skills": [
@@ -134,7 +128,6 @@
       "dates": "Sep 2023 — Jun 2026",
       "duration": "2 yrs 10 mos",
       "location": "Ahmedabad",
-      "url": "",
       "summary": "Coordinated placement activities between students, recruiters and the placement office.",
       "skills": [
         "Stakeholder management",
@@ -148,7 +141,6 @@
       "dates": "Jan 2024 — Oct 2025",
       "duration": "1 yr 10 mos",
       "location": "Ahmedabad",
-      "url": "",
       "summary": "Organised national-level events and hackathons including the Marketing Marathon and NASA Space Apps Challenge 2024.",
       "skills": [
         "Event management",
@@ -162,7 +154,6 @@
       "dates": "Oct 2023 — Dec 2024",
       "duration": "1 yr 3 mos",
       "location": "Ahmedabad",
-      "url": "",
       "summary": "Joined as Production Executive, became Head of Production in six months. Led the team from pre to post — speakers, cameras, lighting and edits — across two TEDx events.",
       "skills": [
         "Production",
@@ -177,7 +168,6 @@
       "dates": "Feb 2024 — Dec 2024",
       "duration": "11 mos",
       "location": "Ahmedabad",
-      "url": "",
       "summary": "End-to-end social media services — graphics, video and everything digital storytelling.",
       "skills": [
         "Social media",
@@ -191,17 +181,13 @@
       "dates": "May 2024 — Jun 2024",
       "duration": "2 mos",
       "location": "Pune",
-      "url": "",
-      "summary": "Summer internship.",
-      "skills": []
+      "summary": "Summer internship."
     },
     {
       "company": "Fiverr · Upwork · Freelancer.com",
       "title": "Freelance Video Editor",
       "dates": "Jul 2020 — Dec 2024",
       "duration": "4 yrs 6 mos",
-      "location": "",
-      "url": "",
       "summary": "Edited videos for clients worldwide; paid my own 12th-grade fees from it.",
       "skills": [
         "Video editing",
@@ -214,20 +200,14 @@
       "title": "Volunteer",
       "dates": "Sep 2023 — Aug 2024",
       "duration": "1 yr",
-      "location": "",
-      "url": "",
-      "summary": "Community service initiatives.",
-      "skills": []
+      "summary": "Community service initiatives."
     },
     {
       "company": "Hamari Pahchan",
       "title": "Social Entrepreneurship",
       "dates": "Aug 2023 — Sep 2023",
       "duration": "2 mos",
-      "location": "",
-      "url": "",
-      "summary": "Social entrepreneurship programme.",
-      "skills": []
+      "summary": "Social entrepreneurship programme."
     }
   ],
   "education": [
@@ -309,26 +289,22 @@
     {
       "hook": "Financial literacy isn’t what drives behavior. Financial attitude does.",
       "excerpt": "Presenting our paper at NICOM 2026 made me rethink how each generation interacts with money — and why brands sell behaviors, not just products.",
-      "stats": "184 reactions · 5.5K impressions",
-      "link": ""
+      "stats": "184 reactions · 5.5K impressions"
     },
     {
       "hook": "I made my first big mistake as a founder last week.",
       "excerpt": "Seven months into Dot Engage, 20+ brands in — and a locked domain reminded me that building is about recovering faster each time.",
-      "stats": "63 reactions · 2.3K impressions",
-      "link": ""
+      "stats": "63 reactions · 2.3K impressions"
     },
     {
       "hook": "The most wonderful team I’ve ever worked with.",
       "excerpt": "What leading production at TEDxPrahladnagar taught me about managing people, resistance and last-minute curveballs.",
-      "stats": "98 reactions · 2.6K impressions",
-      "link": ""
+      "stats": "98 reactions · 2.6K impressions"
     },
     {
       "hook": "You know, it’s funny how uncool and cliché I find LinkedIn…",
       "excerpt": "Why I started writing anyway: a place to document the journey in real time, without overthinking growth.",
-      "stats": "89 reactions · 3.2K impressions",
-      "link": ""
+      "stats": "89 reactions · 3.2K impressions"
     }
   ]
 }
