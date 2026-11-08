@@ -22,6 +22,10 @@ role:
 deliverables:
   - UGC ads
   - Scripts & hooks
+testimonial:
+  quote: Great Creativity, Good to go for performance related creatives that converts.
+  name: Sivaguru Palaniganesh
+  role: Founder, Clotrio
 featured: true
 order: 1
 draft: false
