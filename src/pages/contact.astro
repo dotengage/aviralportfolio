@@ -4,9 +4,12 @@ import Sticker from '../components/Sticker.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
 import fingerGuns from '../assets/photos/finger-guns.png';
+import contact from '../content/contact.json';
 
-const services = ['UGC ads', 'Content strategy', 'Creative direction', 'Social media', 'Personal UGC', 'Something else'];
-const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+// both edited in the dashboard → "Contact form"
+const services = (contact.services ?? []).map((s: string) => s.trim()).filter(Boolean);
+// Web3Forms access keys are public by design (they only allow sending to your own inbox)
+const accessKey = contact.accessKey?.trim() || import.meta.env.PUBLIC_WEB3FORMS_KEY || '';
 
 const channels = [
   { icon: 'mail' as const, label: 'Email', value: site.email, href: `mailto:${site.email}` },
@@ -45,19 +48,23 @@ const channels = [
           <input name="company" autocomplete="organization" placeholder="Where do you work?" />
         </label>
 
-        <fieldset class="field">
-          <legend>What do you need?</legend>
-          <div class="pills">
-            {
-              services.map((s) => (
-                <label class="pill">
-                  <input type="checkbox" name="services" value={s} />
-                  <span>{s}</span>
-                </label>
-              ))
-            }
-          </div>
-        </fieldset>
+        {
+          services.length > 0 && (
+          <fieldset class="field">
+            <legend>What do you need?</legend>
+            <div class="pills">
+              {
+                services.map((s) => (
+                  <label class="pill">
+                    <input type="checkbox" name="services" value={s} />
+                    <span>{s}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+          )
+        }
 
 
         <label class="field">

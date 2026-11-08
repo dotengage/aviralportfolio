@@ -8,7 +8,7 @@ export const site = {
   name: 'Aviral Jain',
   short: 'Aviral',
   email: 'aviral@dotengage.in',
-  location: 'Bhopal',
+  location: 'India',
   timezone: 'Asia/Kolkata',
   instagram: 'https://instagram.com/aviral.mp4',
   instagramHandle: '@aviral.mp4',
@@ -22,7 +22,7 @@ export const site = {
   tagline: 'I help brands win on social media with content people actually stop scrolling for.',
   services: ['Marketing Strategy', 'Creative Direction', 'UGC & Content', 'Video Editing'],
   description:
-    'Aviral Jain — marketer, creative director and content creator from Bhopal. Founder of Dot Engage, a UGC ad agency trusted by 20+ brands.',
+    'Aviral Jain — marketer, creative director and content creator from India. Founder of Dot Engage, a UGC ad agency trusted by 20+ brands.',
 };
 
 /** The intro greeting — one word per language Aviral speaks. */

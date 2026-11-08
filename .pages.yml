@@ -374,6 +374,23 @@ content:
             label: Post URL (optional)
             type: string
 
+  # ───────────────────────────── Contact form
+  - name: contact
+    label: Contact form
+    type: file
+    path: src/content/contact.json
+    format: json
+    fields:
+      - name: services
+        label: '"What do you need?" options'
+        description: Add, remove or reorder the choices visitors can tick.
+        type: string
+        list: true
+      - name: accessKey
+        label: Web3Forms access key
+        description: Get it free at web3forms.com with aviral@dotengage.in — submissions are emailed there. Safe to keep here (it can only send to your inbox).
+        type: string
+
   # ───────────────────────────── Resume
   - name: settings
     label: Resume
