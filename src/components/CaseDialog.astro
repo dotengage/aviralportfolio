@@ -107,6 +107,31 @@ const cases = await Promise.all(
           </div>
         </section>
 
+        {c.testimonial && (
+          <figure class="cs__feedback">
+            <figcaption class="cs__feedback-label">Client feedback</figcaption>
+            <svg class="cs__feedback-mark" viewBox="0 0 32 24" aria-hidden="true">
+              <path d="M0 24V14C0 6 4.5 1.3 12.6 0l1.3 3.2C9.3 4.6 7.2 7.4 7 11h6v13H0Zm18 0V14c0-8 4.5-12.7 12.6-14L32 3.2C27.3 4.6 25.2 7.4 25 11h6v13H18Z" />
+            </svg>
+            {c.testimonial.quote && <blockquote>{c.testimonial.quote}</blockquote>}
+            {c.testimonial.screenshots.length > 0 && (
+              <div class="cs__feedback-shots">
+                {c.testimonial.screenshots.map((img, i) => (
+                  <a href={img.src} target="_blank" rel="noopener" aria-label={`Open feedback screenshot ${i + 1}`}>
+                    <Image src={img} alt={`Feedback screenshot ${i + 1}`} widths={[320, 640]} sizes="300px" loading="lazy" />
+                  </a>
+                ))}
+              </div>
+            )}
+            {(c.testimonial.name || c.testimonial.role) && (
+              <p class="cs__feedback-who">
+                <strong>{c.testimonial.name}</strong>
+                {c.testimonial.role && <span>{c.testimonial.role}</span>}
+              </p>
+            )}
+          </figure>
+        )}
+
         {c.link && (
           <a class="btn" href={c.link.href} target="_blank" rel="noopener">
             {c.link.label} <Icon name="arrow" size={16} class="arrow" />
@@ -277,16 +302,20 @@ const cases = await Promise.all(
   .cs__story > * {
     margin: 0;
   }
+  .cs__story h1,
   .cs__story h2,
-  .cs__story h3 {
+  .cs__story h3,
+  .cs__story h4 {
     margin-top: 14px;
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
+  .cs__story h1::before,
   .cs__story h2::before,
-  .cs__story h3::before {
+  .cs__story h3::before,
+  .cs__story h4::before {
     content: '';
     display: inline-block;
     width: 6px;
@@ -294,8 +323,7 @@ const cases = await Promise.all(
     margin: 0 8px 2px 0;
     background: var(--orange);
   }
-  .cs__story h2:first-child,
-  .cs__story h3:first-child {
+  .cs__story :is(h1, h2, h3, h4):first-child {
     margin-top: 0;
   }
   .cs__story p,
@@ -322,10 +350,131 @@ const cases = await Promise.all(
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+  .cs__story blockquote > * {
+    margin: 0;
+  }
+  .cs__story blockquote :is(h1, h2, h3, h4)::before {
+    display: none;
+  }
   .cs__story blockquote {
+    display: grid;
+    gap: 8px;
     padding-left: 16px;
     border-left: 3px solid var(--orange);
     font-style: italic;
+  }
+  .cs__story u {
+    text-underline-offset: 3px;
+  }
+  /* tables from the editor: lined, padded, header row shaded, scrolls sideways on phones */
+  .cs__story table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .cs__story th,
+  .cs__story td {
+    min-width: 110px;
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .cs__story th {
+    background: var(--tint);
+    color: var(--text);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .cs__story tr > :last-child {
+    border-right: 0;
+  }
+  .cs__story tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+  .cs__story tbody tr:nth-child(even) td {
+    background: #fafaf8;
+  }
+
+  /* client feedback (optional, after the videos) */
+  .cs__feedback {
+    position: relative;
+    display: grid;
+    gap: 18px;
+    margin: 0;
+    padding: clamp(22px, 3vw, 32px);
+    border-radius: var(--radius);
+    background: var(--tint);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .cs__feedback-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cs__feedback-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 8px 2px 0;
+    background: var(--orange);
+  }
+  .cs__feedback-mark {
+    width: 30px;
+    height: 22px;
+    fill: var(--orange);
+  }
+  .cs__feedback blockquote {
+    margin: 0;
+    max-width: 62ch;
+    font-size: clamp(15px, 1.6vw, 17px);
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+  .cs__feedback-shots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .cs__feedback-shots a {
+    display: block;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.5);
+    transition: transform 0.4s var(--ease);
+  }
+  .cs__feedback-shots a:hover {
+    transform: translateY(-3px);
+  }
+  .cs__feedback-shots img {
+    display: block;
+    width: auto;
+    max-width: min(300px, 100%);
+    max-height: 420px;
+    object-fit: contain;
+    background: #fff;
+  }
+  .cs__feedback-who {
+    display: grid;
+    gap: 2px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .cs__feedback-who strong {
+    font-size: 13px;
+    color: var(--text);
   }
   .cs__gallery {
     display: grid;
@@ -361,9 +510,10 @@ const cases = await Promise.all(
     font-size: 12px;
     font-weight: 600;
   }
+  /* bigger players → YouTube starts them at a higher quality */
   .cs__shorts {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 14px;
   }
   @media (max-width: 760px) {
@@ -374,8 +524,18 @@ const cases = await Promise.all(
       grid-template-columns: 1fr;
       gap: 8px;
     }
+    /* phones: one large player at a time, swipe sideways for the next */
     .cs__shorts {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: min(78vw, 320px);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .cs__shorts > * {
+      scroll-snap-align: start;
     }
   }
 </style>
@@ -438,7 +598,8 @@ const cases = await Promise.all(
       const btn = (e.target as Element).closest<HTMLElement>('[data-short]');
       if (!btn) return;
       const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.short}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.short}?autoplay=1&playsinline=1&rel=0&modestbranding=1&vq=hd1080`;
+      // vq asks YouTube to start in HD; the viewer can still change it from the player's settings
       iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
       iframe.title = btn.getAttribute('aria-label') ?? 'YouTube video';
       // a <button> can't hold interactive content — swap it for a div with the same attributes

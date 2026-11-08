@@ -114,6 +114,28 @@ content:
           - name: href
             label: URL
             type: string
+      - name: testimonial
+        label: Client feedback (optional)
+        description: Shown at the end of the case study, after the videos. Add text, screenshots (e.g. WhatsApp), or both.
+        type: object
+        fields:
+          - name: quote
+            label: Feedback text
+            type: text
+          - name: name
+            label: Name
+            type: string
+          - name: role
+            label: Role & company (e.g. Co-founder, Clotrio)
+            type: string
+          - name: screenshots
+            label: Screenshots
+            type: image
+            options:
+              media: images
+              path: src/assets/uploads/cases
+              multiple:
+                max: 6
       - name: featured
         label: Show on home page
         description: Adds it to the Work rail on the home page.

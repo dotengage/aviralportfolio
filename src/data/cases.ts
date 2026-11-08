@@ -31,9 +31,21 @@ export interface CaseStudy {
   cover?: ImageMetadata;
   gallery: ImageMetadata[];
   link?: { label: string; href: string };
+  /** client feedback for this project — text, screenshots, or both */
+  testimonial?: { quote: string; name: string; role: string; screenshots: ImageMetadata[] };
   featured: boolean;
   placeholder: boolean;
   entry: CollectionEntry<'cases'>;
+}
+
+type RawTestimonial = CollectionEntry<'cases'>['data']['testimonial'];
+
+function toTestimonial(t: RawTestimonial): CaseStudy['testimonial'] {
+  if (!t) return undefined;
+  const quote = t.quote?.trim() ?? '';
+  const screenshots = (t.screenshots ?? []).map(media).filter((img): img is ImageMetadata => !!img);
+  if (!quote && !screenshots.length) return undefined; // nothing filled in → no section
+  return { quote, name: t.name?.trim() ?? '', role: t.role?.trim() ?? '', screenshots };
 }
 
 let filterCache: Filter[] | undefined;
@@ -84,6 +96,7 @@ export async function getCases(): Promise<CaseStudy[]> {
         cover: media(d.cover),
         gallery: d.gallery.map(media).filter((img): img is ImageMetadata => !!img),
         link: d.link?.href ? { label: d.link.label || 'View project', href: d.link.href } : undefined,
+        testimonial: toTestimonial(d.testimonial),
         featured: d.featured,
         placeholder: d.placeholder,
         entry,

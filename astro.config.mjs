@@ -1,6 +1,8 @@
 // @ts-check
 import process from 'node:process';
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
+import rehypeCms from './src/lib/rehype-cms.mjs';
 
 // Hosting: GitHub Pages. Today the site lives at https://dotengage.github.io/aviralportfolio/.
 // To move to your own domain, set the repo variable CUSTOM_DOMAIN (e.g. aviral.in) under
@@ -14,4 +16,7 @@ export default defineConfig({
   base: domain ? '/' : '/aviralportfolio',
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   build: { inlineStylesheets: 'auto' },
+  // case-study text comes from the dashboard's rich-text editor
+  // (unified = remark/rehype; GFM gives tables, strikethrough and autolinks)
+  markdown: { processor: unified({ gfm: true, rehypePlugins: [rehypeCms] }) },
 });

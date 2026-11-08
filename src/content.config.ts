@@ -31,6 +31,15 @@ const cases = defineCollection({
     link: z
       .object({ label: z.string().nullish(), href: z.string().nullish() })
       .nullish(),
+    /** optional client feedback shown at the end of the case study */
+    testimonial: z
+      .object({
+        quote: z.string().nullish(),
+        name: z.string().nullish(),
+        role: z.string().nullish(),
+        screenshots: z.array(z.string()).nullish(),
+      })
+      .nullish(),
   }),
 });
 
