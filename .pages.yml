@@ -390,6 +390,10 @@ content:
         label: Web3Forms access key
         description: Get it free at web3forms.com with aviral@dotengage.in — submissions are emailed there. Safe to keep here (it can only send to your inbox).
         type: string
+      - name: sheetUrl
+        label: Google Sheet link (optional)
+        description: The Apps Script "Web app" URL (ends in /exec). Every enquiry is also added as a row in your sheet. Setup steps are in tools/google-sheet-script.gs.
+        type: string
 
   # ───────────────────────────── Resume
   - name: settings

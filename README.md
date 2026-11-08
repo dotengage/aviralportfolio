@@ -29,8 +29,13 @@ languages (`src/data/experience.ts`).
 
 ## Contact form
 
-Uses [Web3Forms](https://web3forms.com). Create a free key for `aviral@dotengage.in` and add it as the repo
-variable `PUBLIC_WEB3FORMS_KEY` (Settings → Secrets and variables → Actions → Variables), then re-run the deploy.
+Uses [Web3Forms](https://web3forms.com) — the access key and the "What do you need?" options are in the
+dashboard → Contact form.
+
+### Google Sheets (optional)
+
+Every enquiry can also be added as a row in a Google Sheet. Follow the steps at the top of
+`tools/google-sheet-script.gs`, then paste the web-app URL into the dashboard → Contact form → Google Sheet link.
 
 ## Custom domain
 
