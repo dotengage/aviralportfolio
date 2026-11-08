@@ -7,7 +7,8 @@
  * 3. Deploy → New deployment → gear icon → "Web app".
  *      Description: Portfolio form
  *      Execute as:  Me
- *      Who has access: Anyone        ← needed so the website can send rows (nobody can read the sheet)
+ *      Who has access: Anyone        ← must be exactly "Anyone" (not "Anyone with Google account"),
+ *                                       or every website request gets "Access denied". Nobody can read the sheet.
  *    Click Deploy, then Authorize access and allow it for your Google account.
  * 4. Copy the "Web app" URL (ends in /exec).
  * 5. Dashboard (app.pagescms.org) → Contact form → "Google Sheet link" → paste → Save.
@@ -18,7 +19,7 @@
  */
 
 const SHEET_NAME = 'Responses';
-const HEADERS = ['Submitted at', 'Name', 'Email', 'Brand / company', 'What they need', 'Message', 'Page'];
+const HEADERS = ['Submitted at', 'Name', 'Email', 'Phone', 'Brand / company', 'What they need', 'Message', 'Page'];
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -33,6 +34,7 @@ function doPost(e) {
       new Date(),
       clean(p.name),
       clean(p.email),
+      clean(p.phone),
       clean(p.company),
       clean(p.services),
       clean(p.message),
