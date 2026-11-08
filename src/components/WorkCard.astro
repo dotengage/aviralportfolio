@@ -23,7 +23,16 @@ const { item, index, variant = 'grid', hidden = false } = Astro.props;
   <div class:list={['card__cover', !item.cover && 'ph']}>
     {
       item.cover ? (
-        <Image src={item.cover} alt="" widths={[360, 720]} sizes="(max-width: 760px) 80vw, 360px" />
+        <Image
+          src={item.cover}
+          alt=""
+          width={420}
+          height={525}
+          fit="cover"
+          position="center"
+          densities={[1, 2]}
+          loading="lazy"
+        />
       ) : (
         <div class="card__ph">
           <span class="card__ph-brand">{item.brand}</span>

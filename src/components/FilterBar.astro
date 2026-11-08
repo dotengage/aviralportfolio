@@ -1,0 +1,223 @@
+---
+/**
+ * "All" chip + a single dropdown (filter icon + selected category) holding every other filter.
+ * Each option carries the same data attribute the page script listens to (e.g. data-filter="fashion"),
+ * so filtering logic lives in the page; this component only handles the dropdown UI and keeps
+ * the button label in sync with whichever option is pressed.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  /** data attribute the page script reads, without "data-" — e.g. "filter" or "rail-filter" */
+  attr: string;
+  total: number;
+  filters: { id: string; label: string; count: number }[];
+  /** which side the menu opens towards */
+  align?: 'left' | 'right';
+  label?: string;
+}
+const { attr, total, filters, align = 'left', label = 'Category' } = Astro.props;
+const data = (id: string) => ({ [`data-${attr}`]: id });
+---
+
+<div class:list={['fbar', `fbar--${align}`]} role="toolbar" aria-label="Filter work" data-fbar data-attr={attr}>
+  <button class="chip" type="button" aria-pressed="true" {...data('all')}>
+    All <span class="count">{total}</span>
+  </button>
+
+  {
+    filters.length > 0 && (
+      <div class="fdrop" data-fdrop>
+        <button
+          class="chip fdrop__btn"
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          data-fdrop-btn
+          data-default={label}
+        >
+          <Icon name="filter" size={15} />
+          <span data-fdrop-label>{label}</span>
+          <Icon name="chevron" size={15} class="fdrop__chev" />
+        </button>
+        <ul class="fdrop__menu" role="menu" hidden data-fdrop-menu data-lenis-prevent>
+          {filters.map((f) => (
+            <li role="none">
+              <button
+                class="fdrop__item"
+                type="button"
+                role="menuitemradio"
+                aria-checked="false"
+                aria-pressed="false"
+                data-fdrop-item
+                data-label={f.label}
+                {...data(f.id)}
+              >
+                <span>{f.label}</span>
+                <span class="count">{f.count}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .fbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .fdrop {
+    position: relative;
+  }
+  .fdrop__btn {
+    gap: 8px;
+  }
+  .fdrop__btn :global(.fdrop__chev) {
+    transition: transform 0.3s var(--ease);
+  }
+  .fdrop__btn[aria-expanded='true'] :global(.fdrop__chev) {
+    transform: rotate(180deg);
+  }
+  /* a category is selected → the button reads as the active chip */
+  .fdrop__btn.is-active {
+    background: var(--text);
+    color: #fff;
+    box-shadow: none;
+  }
+  .fdrop__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 40;
+    min-width: 230px;
+    max-height: min(340px, 60vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow:
+      0 0 0 1.5px var(--line),
+      0 18px 40px -18px rgba(0, 0, 0, 0.3);
+    transform-origin: top left;
+    animation: menu-in 0.22s var(--ease);
+  }
+  .fbar--right .fdrop__menu {
+    left: auto;
+    right: 0;
+    transform-origin: top right;
+  }
+  @media (max-width: 760px) {
+    /* on phones the bar wraps to the left edge — always open rightwards so the menu stays on screen */
+    .fbar--right .fdrop__menu {
+      left: 0;
+      right: auto;
+      transform-origin: top left;
+    }
+  }
+  .fdrop__menu[hidden] {
+    display: none;
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.97);
+    }
+  }
+  .fdrop__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    color: var(--text);
+    transition: background-color 0.2s;
+  }
+  .fdrop__item:hover,
+  .fdrop__item:focus-visible {
+    background: var(--tint);
+    outline: none;
+  }
+  .fdrop__item .count {
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .fdrop__item[aria-pressed='true'] {
+    background: var(--tint);
+    font-weight: 800;
+  }
+  .fdrop__item[aria-pressed='true'] span:first-child::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 8px 2px 0;
+    background: var(--orange);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-fbar]').forEach((bar) => {
+    const drop = bar.querySelector<HTMLElement>('[data-fdrop]');
+    if (!drop) return;
+    const btn = drop.querySelector<HTMLButtonElement>('[data-fdrop-btn]')!;
+    const menu = drop.querySelector<HTMLElement>('[data-fdrop-menu]')!;
+    const label = btn.querySelector<HTMLElement>('[data-fdrop-label]')!;
+    const items = [...menu.querySelectorAll<HTMLButtonElement>('[data-fdrop-item]')];
+
+    const open = (focusFirst = false) => {
+      menu.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      if (focusFirst) (items.find((i) => i.getAttribute('aria-pressed') === 'true') ?? items[0])?.focus();
+    };
+    const close = (refocus = false) => {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      if (refocus) btn.focus();
+    };
+
+    btn.addEventListener('click', () => (menu.hidden ? open() : close()));
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        open(true);
+      }
+    });
+    menu.addEventListener('keydown', (e) => {
+      const i = items.indexOf(document.activeElement as HTMLButtonElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        items[(i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus();
+      } else if (e.key === 'Escape') close(true);
+    });
+    // the page script does the filtering on click; we just close the menu
+    items.forEach((item) => item.addEventListener('click', () => close()));
+    document.addEventListener('click', (e) => {
+      if (!drop.contains(e.target as Node)) close();
+    });
+    addEventListener('keydown', (e) => e.key === 'Escape' && !menu.hidden && close(true));
+
+    // keep the button's label + active state in sync with whichever option is pressed
+    // (works no matter who changed it — a click, the ?filter= URL, or a reset to "All")
+    const sync = () => {
+      const active = items.find((i) => i.getAttribute('aria-pressed') === 'true');
+      items.forEach((i) => i.setAttribute('aria-checked', String(i === active)));
+      label.textContent = active?.dataset.label ?? btn.dataset.default ?? 'Category';
+      btn.classList.toggle('is-active', !!active);
+    };
+    new MutationObserver(sync).observe(menu, { subtree: true, attributes: true, attributeFilter: ['aria-pressed'] });
+    sync();
+  });
+</script>

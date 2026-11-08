@@ -2,14 +2,12 @@
 import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import CaseDialog from '../components/CaseDialog.astro';
+import FilterBar from '../components/FilterBar.astro';
 import { getCases, filtersFor } from '../data/cases';
 
 const cases = await getCases();
 
-const filters = [
-  { id: 'all', label: 'All', count: cases.length },
-  ...(await filtersFor(cases)),
-];
+const filters = await filtersFor(cases);
 ---
 
 <Base title="Work & case studies" description="Case studies from Dot Engage, personal UGC and other projects by Aviral Jain.">
@@ -23,14 +21,8 @@ const filters = [
   </section>
 
   <section class="wrap work" data-work>
-    <div class="work__filters" role="toolbar" aria-label="Filter case studies" data-reveal>
-      {
-        filters.map((f, i) => (
-          <button class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-filter={f.id}>
-            {f.label} <span class="count">{f.count}</span>
-          </button>
-        ))
-      }
+    <div class="work__filters" data-reveal>
+      <FilterBar attr="filter" total={cases.length} filters={filters} />
     </div>
     <div class="work__grid" data-work-grid>
       {cases.map((item, i) => <WorkCard item={item} index={i} />)}
