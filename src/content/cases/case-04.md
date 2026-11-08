@@ -1,7 +1,8 @@
 ---
 title: Case study 04
 brand: Brand name
-category: dotengage
+filters:
+  - src/content/filters/dot-engage.json
 year: '2025'
 order: 4
 featured: true

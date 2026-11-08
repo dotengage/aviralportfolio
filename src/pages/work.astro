@@ -2,13 +2,13 @@
 import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import CaseDialog from '../components/CaseDialog.astro';
-import { getCases, categories } from '../data/cases';
+import { getCases, filtersFor } from '../data/cases';
 
 const cases = await getCases();
 
 const filters = [
   { id: 'all', label: 'All', count: cases.length },
-  ...categories.map((c) => ({ ...c, count: cases.filter((x) => x.category === c.id).length })),
+  ...(await filtersFor(cases)),
 ];
 ---
 
@@ -87,7 +87,7 @@ const filters = [
       const state = animate && !reduced ? Flip.getState(cards) : null;
       let n = 0;
       cards.forEach((c) => {
-        const on = id === 'all' || c.dataset.category === id;
+        const on = id === 'all' || (c.dataset.filters ?? '').split(' ').includes(id);
         c.hidden = !on;
         if (on) n++;
       });

@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { categoryLabel, type CaseStudy } from '../data/cases';
+import type { CaseStudy } from '../data/cases';
 import Icon from './Icon.astro';
 import { url } from '../data/site';
 
@@ -17,7 +17,7 @@ const { item, index, variant = 'grid', hidden = false } = Astro.props;
   href={url(`/work#${item.slug}`)}
   class:list={['card', `card--${variant}`]}
   data-case-open={item.slug}
-  data-category={item.category}
+  data-filters={item.filters.join(' ')}
   hidden={hidden}
 >
   <div class:list={['card__cover', !item.cover && 'ph']}>
@@ -31,7 +31,7 @@ const { item, index, variant = 'grid', hidden = false } = Astro.props;
         </div>
       )
     }
-    <span class="card__cat">{categoryLabel(item.category)}</span>
+    {item.label && <span class="card__cat">{item.label}</span>}
     {
       item.shorts.length > 0 && (
         <span class="card__play">

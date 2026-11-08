@@ -8,7 +8,11 @@ const cases = defineCollection({
   schema: z.object({
     title: z.string(),
     brand: z.string().default(''),
-    category: z.enum(['dotengage', 'personal-ugc', 'personal', 'other']).default('dotengage'),
+    /** references to src/content/filters/*.json — stored as paths by the dashboard; we keep the file slug */
+    filters: z
+      .array(z.string())
+      .nullish()
+      .transform((v) => (v ?? []).map((f) => f.split(/[\/]/).pop()!.replace(/\.json$/, '')).filter(Boolean)),
     year: z.coerce.string().default(''),
     order: z.coerce.number().default(99),
     featured: z.boolean().default(false),
@@ -30,4 +34,13 @@ const cases = defineCollection({
   }),
 });
 
-export const collections = { cases };
+/** Work-page filters (niches, agency vs personal…) — one JSON file each, managed in the dashboard. */
+const filters = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/filters' }),
+  schema: z.object({
+    name: z.string(),
+    order: z.coerce.number().default(99),
+  }),
+});
+
+export const collections = { cases, filters };

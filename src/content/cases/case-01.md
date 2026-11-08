@@ -1,7 +1,8 @@
 ---
 title: Clotrio
 brand: Case Study
-category: dotengage
+filters:
+  - src/content/filters/dot-engage.json
 year: "2026"
 summary: An undergarment brand.
 cover: src/assets/uploads/cases/create-promotional-commercial-video-ads-for-your-business.png

@@ -1,7 +1,8 @@
 ---
 title: Case study 08
 brand: Brand name
-category: personal
+filters:
+  - src/content/filters/personal.json
 year: '2025'
 order: 8
 featured: false

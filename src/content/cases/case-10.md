@@ -1,7 +1,8 @@
 ---
 title: Case study 10
 brand: Brand name
-category: other
+filters:
+  - src/content/filters/other.json
 year: '2025'
 order: 10
 featured: false

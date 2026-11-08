@@ -1,7 +1,8 @@
 ---
 title: Case study 07
 brand: Brand name
-category: personal-ugc
+filters:
+  - src/content/filters/personal-ugc.json
 year: '2025'
 order: 7
 featured: true

@@ -1,16 +1,15 @@
 ---
-import { getCases, categoryLabel, type CaseCategory } from '../data/cases';
+import { getCases, filtersFor } from '../data/cases';
 import WorkCard from './WorkCard.astro';
 import Icon from './Icon.astro';
 import { url } from '../data/site';
 
-const RAIL_CATS: CaseCategory[] = ['dotengage', 'personal-ugc'];
 const PAGE = 6;
 // "Show on home page" in the dashboard picks what appears here
-const items = (await getCases()).filter((c) => c.featured && RAIL_CATS.includes(c.category));
+const items = (await getCases()).filter((c) => c.featured);
 const filters = [
   { id: 'all', label: 'All', count: items.length },
-  ...RAIL_CATS.map((id) => ({ id, label: categoryLabel(id), count: items.filter((c) => c.category === id).length })),
+  ...(await filtersFor(items)),
 ];
 ---
 
@@ -194,7 +193,7 @@ const filters = [
     horizontalScroll(rail, track, (p) => (bar.style.transform = `scaleX(${p})`));
 
     const render = () => {
-      const matching = cards.filter((c) => filter === 'all' || c.dataset.category === filter);
+      const matching = cards.filter((c) => filter === 'all' || (c.dataset.filters ?? '').split(' ').includes(filter));
       cards.forEach((c) => (c.hidden = true));
       matching.slice(0, shown).forEach((c) => (c.hidden = false));
       more.hidden = matching.length <= shown;

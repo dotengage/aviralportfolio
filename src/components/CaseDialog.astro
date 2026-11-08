@@ -5,12 +5,16 @@
  */
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
-import { getCases, categoryLabel } from '../data/cases';
+import { getCases, filterNames } from '../data/cases';
 import ShortEmbed from './ShortEmbed.astro';
 import Icon from './Icon.astro';
 
 const cases = await Promise.all(
-  (await getCases()).map(async (c) => ({ ...c, Content: (await render(c.entry)).Content })),
+  (await getCases()).map(async (c) => ({
+    ...c,
+    names: await filterNames(c),
+    Content: (await render(c.entry)).Content,
+  })),
 );
 ---
 
@@ -29,7 +33,9 @@ const cases = await Promise.all(
       <article class="cs">
         <header class="cs__head">
           <div class="cs__tags">
-            <span class="tag">{categoryLabel(c.category)}</span>
+            {c.names.map((n) => (
+              <span class="tag">{n}</span>
+            ))}
             <span class="tag">{c.year}</span>
             {c.placeholder && <span class="ph-badge">PLACEHOLDER</span>}
           </div>
@@ -58,8 +64,8 @@ const cases = await Promise.all(
             <dd>{c.deliverables.join(', ') || '—'}</dd>
           </div>
           <div>
-            <dt>Category</dt>
-            <dd>{categoryLabel(c.category)}</dd>
+            <dt>Filters</dt>
+            <dd>{c.names.join(', ') || '—'}</dd>
           </div>
         </dl>
 

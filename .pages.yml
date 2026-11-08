@@ -24,7 +24,7 @@ content:
     format: yaml-frontmatter
     filename: '{primary}.md'
     view:
-      fields: [title, brand, category, featured, draft]
+      fields: [title, brand, featured, draft]
       primary: title
       sort: [order, title, brand]
       search: [title, brand, summary]
@@ -39,19 +39,16 @@ content:
       - name: brand
         label: Brand / client
         type: string
-      - name: category
-        label: Category
-        type: select
+      - name: filters
+        label: Filters
+        description: Pick every filter this case study belongs to (e.g. Dot Engage + Fashion). Manage the list under "Filters".
+        type: reference
         options:
-          values:
-            - name: dotengage
-              label: Dot Engage (agency)
-            - name: personal-ugc
-              label: Personal UGC
-            - name: personal
-              label: Personal project
-            - name: other
-              label: Other
+          collection: filters
+          multiple: true
+          search: name
+          value: '{path}'
+          label: '{fields.name}'
       - name: year
         label: Year
         type: string
@@ -119,7 +116,7 @@ content:
             type: string
       - name: featured
         label: Show on home page
-        description: Only Dot Engage and Personal UGC case studies appear in the home rail.
+        description: Adds it to the Work rail on the home page.
         type: boolean
       - name: order
         label: Sort order
@@ -128,6 +125,31 @@ content:
       - name: draft
         label: Hide (draft)
         type: boolean
+
+  # ───────────────────────────── Filters for the Work page
+  - name: filters
+    label: Filters
+    type: collection
+    path: src/content/filters
+    format: json
+    filename: '{primary}.json'
+    view:
+      fields: [name, order]
+      primary: name
+      sort: [order, name]
+      default:
+        sort: order
+        order: asc
+    fields:
+      - name: name
+        label: Filter name
+        description: e.g. Fashion, Cosmetics, Health & Wellbeing. Filters with no case studies are hidden on the site.
+        type: string
+        required: true
+      - name: order
+        label: Sort order
+        description: Lower numbers show first in the filter bar.
+        type: number
 
   # ───────────────────────────── Testimonials
   - name: testimonials
