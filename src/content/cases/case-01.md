@@ -16,10 +16,6 @@ results:
     label: Videos delivered
   - value: 30%
     label: Hook rate / CTR
-gallery:
-  - src/assets/uploads/cases/creator-4.png
-  - src/assets/uploads/cases/screenshot20250730-000815.png
-  - src/assets/uploads/cases/screenshot20250730-000519.png
 role:
   - Strategy
   - Creative direction
