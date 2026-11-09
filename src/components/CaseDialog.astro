@@ -202,7 +202,14 @@ const cases = await Promise.all(
 
   .cs {
     display: grid;
+    /* minmax(0, …) + min-width: 0 stop wide content (tables, the sideways video row)
+       from stretching the whole case study past the screen on phones */
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(28px, 4vw, 44px);
+  }
+  .cs > *,
+  .cs__block > * {
+    min-width: 0;
   }
   .cs__tags {
     display: flex;
@@ -263,7 +270,7 @@ const cases = await Promise.all(
   }
   .cs__block {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 200px minmax(0, 1fr);
     gap: 16px;
   }
   .cs__block h3 {
@@ -285,11 +292,12 @@ const cases = await Promise.all(
     font-size: 14.5px;
   }
   .cs__block--wide {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   /* rich text written in the dashboard */
   .cs__story {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 14px;
     max-width: 68ch;
     font-size: 14.5px;
@@ -517,7 +525,7 @@ const cases = await Promise.all(
       grid-template-columns: 1fr;
     }
     .cs__block {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 8px;
     }
     /* phones: one large player at a time, swipe sideways for the next */
