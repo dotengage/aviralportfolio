@@ -90,14 +90,29 @@ const cases = await Promise.all(
 
         <section class="cs__block cs__block--wide">
           <h3>The videos</h3>
-          <div class="cs__shorts">
-            {c.shorts.length ? (
-              c.shorts.map((id, i) => <ShortEmbed id={id} title={`${c.brand} — video ${i + 1}`} />)
-            ) : (
+          <div class="cs__shorts-wrap" data-shorts>
+            <div class="cs__shorts" data-shorts-track>
+              {c.shorts.length ? (
+                c.shorts.map((id, i) => <ShortEmbed id={id} title={`${c.brand} — video ${i + 1}`} />)
+              ) : (
+                <>
+                  <ShortEmbed />
+                  <ShortEmbed />
+                  <ShortEmbed />
+                </>
+              )}
+            </div>
+            {(c.shorts.length || 3) > 1 && (
               <>
-                <ShortEmbed />
-                <ShortEmbed />
-                <ShortEmbed />
+                <button class="cs__shorts-btn cs__shorts-btn--prev" type="button" aria-label="Previous video" data-shorts-prev disabled>
+                  <Icon name="arrow-right" size={18} />
+                </button>
+                <button class="cs__shorts-btn cs__shorts-btn--next" type="button" aria-label="Next video" data-shorts-next>
+                  <Icon name="arrow-right" size={18} />
+                </button>
+                <p class="cs__shorts-count" aria-live="polite" data-shorts-count>
+                  1 / {c.shorts.length || 3} · swipe for more
+                </p>
               </>
             )}
           </div>
@@ -175,6 +190,21 @@ const cases = await Promise.all(
   }
   .case.is-in .case__sheet {
     transform: none;
+  }
+  @media (max-width: 760px) {
+    /* phones: the sheet fills the screen — no floating box with a strip of page above it */
+    .case__sheet {
+      inset: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .case__close {
+      top: calc(env(safe-area-inset-top) + 12px);
+      right: 12px;
+    }
+    .case__content {
+      padding-top: calc(env(safe-area-inset-top) + 24px);
+    }
   }
   .case__close {
     position: absolute;
@@ -514,6 +544,13 @@ const cases = await Promise.all(
     font-size: 12px;
     font-weight: 600;
   }
+  .cs__shorts-wrap {
+    position: relative;
+  }
+  .cs__shorts-btn,
+  .cs__shorts-count {
+    display: none;
+  }
   /* bigger players → YouTube starts them at a higher quality */
   .cs__shorts {
     display: grid;
@@ -541,6 +578,58 @@ const cases = await Promise.all(
     .cs__shorts > * {
       scroll-snap-align: start;
     }
+    /* smaller cards so the next video peeks in from the right */
+    .cs__shorts {
+      grid-auto-columns: min(64vw, 260px);
+    }
+    .cs__shorts-btn {
+      position: absolute;
+      top: calc(50% - 28px);
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.45);
+      transition:
+        opacity 0.25s,
+        transform 0.3s var(--ease);
+    }
+    .cs__shorts-btn:active {
+      transform: scale(0.92);
+    }
+    .cs__shorts-btn--prev {
+      left: -6px;
+    }
+    .cs__shorts-btn--prev svg {
+      transform: rotate(180deg);
+    }
+    .cs__shorts-btn--next {
+      right: -6px;
+      animation: nudge 1.4s var(--ease-io) 0.6s 2;
+    }
+    .cs__shorts-btn[disabled] {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cs__shorts-count {
+      display: block;
+      margin-top: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+    @keyframes nudge {
+      50% {
+        transform: translateX(-6px);
+      }
+    }
   }
 </style>
 
@@ -558,6 +647,7 @@ const cases = await Promise.all(
       if (!tpl) return false;
       lastFocus = document.activeElement as HTMLElement;
       content.replaceChildren(tpl.content.cloneNode(true));
+      setupShorts(content);
       content.scrollTop = 0;
       dialog.showModal();
       cleaned = false;
@@ -579,6 +669,32 @@ const cases = await Promise.all(
       if (location.hash) history.replaceState(null, '', location.pathname + location.search);
       lastFocus?.focus({ preventScroll: true });
     };
+    // phones: arrows + "2 / 5" counter for the sideways row of videos (hidden on desktop via CSS)
+    const setupShorts = (root: HTMLElement) => {
+      const wrap = root.querySelector<HTMLElement>('[data-shorts]');
+      const track = wrap?.querySelector<HTMLElement>('[data-shorts-track]');
+      const prev = wrap?.querySelector<HTMLButtonElement>('[data-shorts-prev]');
+      const next = wrap?.querySelector<HTMLButtonElement>('[data-shorts-next]');
+      const count = wrap?.querySelector<HTMLElement>('[data-shorts-count]');
+      if (!track || !prev || !next || !count) return;
+      const total = track.children.length;
+      const step = () => {
+        const first = track.children[0] as HTMLElement | undefined;
+        return (first?.offsetWidth ?? track.clientWidth) + (parseFloat(getComputedStyle(track).columnGap) || 0);
+      };
+      const update = () => {
+        const max = track.scrollWidth - track.clientWidth;
+        const i = Math.min(total - 1, Math.round(track.scrollLeft / step()));
+        prev.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= max - 2;
+        count.textContent = `${i + 1} / ${total}` + (i === 0 ? ' · swipe for more' : '');
+      };
+      prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+      next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+      track.addEventListener('scroll', update, { passive: true });
+      requestAnimationFrame(update);
+    };
+
     const close = () => {
       dialog.classList.remove('is-in');
       setTimeout(() => {
