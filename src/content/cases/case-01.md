@@ -9,6 +9,9 @@ summary: An undergarment brand.
 cover: src/assets/uploads/cases/undipendencesale22-recovered.webp
 shorts:
   - https://www.youtube.com/shorts/5otCk-4fllU
+  - https://www.youtube.com/shorts/KfYXKqxWKuw
+  - https://youtube.com/shorts/29_hcE-6bMg?si=T-d1UMExfeu-BHGl
+  - https://youtube.com/shorts/oO99EJsxKSU?si=65B-JAX920Lv3yU2
 results:
   - value: 2x
     label: ROAS
