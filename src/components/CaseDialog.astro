@@ -91,6 +91,7 @@ const cases = await Promise.all(
         <section class="cs__block cs__block--wide">
           <h3>The videos</h3>
           <div class="cs__shorts-wrap" data-shorts>
+            <div class="cs__shorts-pin" data-shorts-pin>
             <div class="cs__shorts" data-shorts-track>
               {c.shorts.length ? (
                 c.shorts.map((id, i) => <ShortEmbed id={id} title={`${c.brand} — video ${i + 1}`} />)
@@ -115,6 +116,7 @@ const cases = await Promise.all(
                 </p>
               </>
             )}
+            </div>
           </div>
         </section>
 
@@ -625,6 +627,15 @@ const cases = await Promise.all(
       color: var(--muted);
       text-align: center;
     }
+    /* scroll-linked mode: the row pins while vertical scrolling slides the videos across */
+    .cs__shorts-wrap.is-linked .cs__shorts {
+      overflow-x: hidden;
+      scroll-snap-type: none;
+    }
+    .cs__shorts-wrap.is-linked .cs__shorts-pin {
+      position: sticky;
+      top: var(--pin-top, 80px);
+    }
     @keyframes nudge {
       50% {
         transform: translateX(-6px);
@@ -669,15 +680,25 @@ const cases = await Promise.all(
       if (location.hash) history.replaceState(null, '', location.pathname + location.search);
       lastFocus?.focus({ preventScroll: true });
     };
-    // phones: arrows + "2 / 5" counter for the sideways row of videos (hidden on desktop via CSS)
+    // phones: arrows + "2 / 5" counter for the sideways row of videos (hidden on desktop via CSS).
+    // When there's more than one video, the row also pins and slides across as you scroll down,
+    // then the page carries on scrolling once the last video is reached.
+    const phone = matchMedia('(max-width: 760px)');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let unlinkShorts: (() => void) | null = null;
+
     const setupShorts = (root: HTMLElement) => {
+      unlinkShorts?.();
+      unlinkShorts = null;
       const wrap = root.querySelector<HTMLElement>('[data-shorts]');
+      const pin = wrap?.querySelector<HTMLElement>('[data-shorts-pin]');
       const track = wrap?.querySelector<HTMLElement>('[data-shorts-track]');
       const prev = wrap?.querySelector<HTMLButtonElement>('[data-shorts-prev]');
       const next = wrap?.querySelector<HTMLButtonElement>('[data-shorts-next]');
       const count = wrap?.querySelector<HTMLElement>('[data-shorts-count]');
-      if (!track || !prev || !next || !count) return;
+      if (!wrap || !pin || !track || !prev || !next || !count) return;
       const total = track.children.length;
+      const linked = () => wrap.classList.contains('is-linked');
       const step = () => {
         const first = track.children[0] as HTMLElement | undefined;
         return (first?.offsetWidth ?? track.clientWidth) + (parseFloat(getComputedStyle(track).columnGap) || 0);
@@ -687,12 +708,56 @@ const cases = await Promise.all(
         const i = Math.min(total - 1, Math.round(track.scrollLeft / step()));
         prev.disabled = track.scrollLeft <= 2;
         next.disabled = track.scrollLeft >= max - 2;
-        count.textContent = `${i + 1} / ${total}` + (i === 0 ? ' · swipe for more' : '');
+        count.textContent = `${i + 1} / ${total}` + (i === 0 ? (linked() ? ' · scroll for more' : ' · swipe for more') : '');
       };
-      prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-      next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+
+      // vertical scroll of the sheet → horizontal position of the row
+      const distance = () => Math.max(0, track.scrollWidth - track.clientWidth);
+      const layout = () => {
+        const on = phone.matches && !reducedMotion.matches && total > 1;
+        wrap.classList.toggle('is-linked', on);
+        if (!on) {
+          wrap.style.height = '';
+          return;
+        }
+        const top = Math.max(72, (root.clientHeight - pin.offsetHeight) / 2);
+        wrap.style.setProperty('--pin-top', `${top}px`);
+        // the runway: as tall as the row plus however far it has to slide
+        wrap.style.height = `${pin.offsetHeight + distance()}px`;
+        sync();
+      };
+      const sync = () => {
+        if (!linked()) return;
+        const pinTop = parseFloat(wrap.style.getPropertyValue('--pin-top')) || 72;
+        const travelled = pinTop - (wrap.getBoundingClientRect().top - root.getBoundingClientRect().top);
+        track.scrollLeft = Math.min(distance(), Math.max(0, travelled));
+        update();
+      };
+
+      // arrows: in linked mode move the sheet's scroll (1px down = 1px across), otherwise the row itself
+      const go = (dir: 1 | -1) =>
+        linked()
+          ? root.scrollBy({ top: dir * step(), behavior: 'smooth' })
+          : track.scrollBy({ left: dir * step(), behavior: 'smooth' });
+      prev.addEventListener('click', () => go(-1));
+      next.addEventListener('click', () => go(1));
       track.addEventListener('scroll', update, { passive: true });
-      requestAnimationFrame(update);
+      root.addEventListener('scroll', sync, { passive: true });
+      const onResize = () => layout();
+      addEventListener('resize', onResize);
+      phone.addEventListener('change', onResize);
+      unlinkShorts = () => {
+        root.removeEventListener('scroll', sync);
+        removeEventListener('resize', onResize);
+        phone.removeEventListener('change', onResize);
+      };
+      layout();
+      update();
+      // and again once fonts/images have settled
+      setTimeout(() => {
+        layout();
+        update();
+      }, 400);
     };
 
     const close = () => {

@@ -10,7 +10,6 @@ import { greetings } from '../data/site';
           <span class:list={['word__text', g.lang === 'hi' && 'deva']} lang={g.lang}>
             {g.word}
           </span>
-          {g.label && <span class="word__label">{g.label}</span>}
         </div>
       ))
     }
@@ -62,13 +61,6 @@ import { greetings } from '../data/site';
   .word__text.deva {
     font-weight: 700;
     letter-spacing: 0;
-  }
-  .word__label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    opacity: 0.85;
   }
   .preloader__bar {
     position: absolute;

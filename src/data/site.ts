@@ -27,9 +27,9 @@ export const site = {
 
 /** The intro greeting — one word per language Aviral speaks. */
 export const greetings = [
-  { word: 'नमस्ते', lang: 'hi', label: 'Hindi' },
-  { word: 'Hello', lang: 'en', label: 'English' },
-  { word: 'क्या हाल चाल?', lang: 'hi', label: '' },
+  { word: 'नमस्ते', lang: 'hi' },
+  { word: 'Hello', lang: 'en' },
+  { word: 'क्या हाल चाल?', lang: 'hi' },
 ];
 
 export const nav = [
