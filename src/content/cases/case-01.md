@@ -26,6 +26,8 @@ testimonial:
   quote: Great Creativity, Good to go for performance related creatives that converts.
   name: Sivaguru Palaniganesh
   role: Founder, Clotrio
+  screenshots:
+    - src/assets/uploads/cases/img9893-1.jpeg
 featured: true
 order: 1
 draft: false
