@@ -56,5 +56,18 @@
       "Invoice templates, PDF export and overdue tracking"
     ],
     "builtFor": "Everyone who have some wants lol!"
+  },
+  {
+    "name": "Unbroke",
+    "kind": "Just double tap on the back of your iPhone to record expense",
+    "oneLiner": "A Expense Tracker with automatic categorization.",
+    "image": "src/assets/uploads/projects/screenshot-2026-11-22-020947.png",
+    "url": "https://dotengage.github.io/unbroke/",
+    "description": "Blah Balh",
+    "features": [
+      "blah",
+      "blah"
+    ],
+    "builtFor": "Cool People Like me"
   }
 ]
