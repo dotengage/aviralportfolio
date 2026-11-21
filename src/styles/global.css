@@ -38,6 +38,9 @@
 
 html {
   overflow-x: clip;
+  /* no automatic scroll "correction" when content above the viewport changes size
+     (expanding/collapsing cards would otherwise make the page jump) */
+  overflow-anchor: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }

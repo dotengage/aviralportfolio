@@ -341,6 +341,9 @@ import Icon from './Icon.astro';
      */
     const flipTo = (target: HTMLElement | null, targetIndex: number) => {
       busy = true;
+      // hold the section at its current height: if the layout got shorter for even one frame,
+      // the browser would snap the page scroll up (and Flip would "see" other cards move)
+      grid.style.minHeight = `${grid.offsetHeight}px`;
       const state = Flip.getState(cards);
       grid.classList.add('is-flipping');
       setOpen(target);
@@ -357,8 +360,19 @@ import Icon from './Icon.astro';
           heads[i].style.width = '';
           inners[i].style.opacity = '';
         });
-        busy = false;
-        ScrollTrigger.refresh();
+        // now let the section settle to its real height — smoothly, so the page never jumps
+        const top = grid.getBoundingClientRect().top;
+        const natural = Math.max(...cards.map((c) => c.getBoundingClientRect().bottom)) - top;
+        gsap.to(grid, {
+          minHeight: natural,
+          duration: 0.35,
+          ease: 'power2.out',
+          onComplete: () => {
+            grid.style.minHeight = '';
+            busy = false;
+            ScrollTrigger.refresh();
+          },
+        });
       };
       Flip.from(state, { duration: 0.65, ease: 'power3.inOut', onComplete: done, onInterrupt: done });
       if (target) {
