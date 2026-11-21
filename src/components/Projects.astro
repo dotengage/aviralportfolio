@@ -86,9 +86,10 @@ import Icon from './Icon.astro';
 
 <style>
   .projects {
+    --pgap: clamp(16px, 2.5vw, 28px);
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: clamp(16px, 2.5vw, 28px);
+    gap: var(--pgap);
     align-items: start;
   }
   .project {
@@ -114,7 +115,8 @@ import Icon from './Icon.astro';
   @media (min-width: 761px) {
     .project.is-open {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      /* left column = exactly a closed card's width, so the screenshot never changes size */
+      grid-template-columns: calc((100% - var(--pgap)) / 2) minmax(0, 1fr);
       align-items: start;
     }
     .project.is-open .project__body {
@@ -320,35 +322,76 @@ import Icon from './Icon.astro';
       if (col > 0) cards[openIndex].style.order = String((openIndex - col) * 2 - 1);
     };
 
+    const heads = cards.map((c) => c.querySelector<HTMLElement>('.project__head')!);
+    const inners = cards.map((c) => c.querySelector<HTMLElement>('.project__inner')!);
+    let busy = false;
+
+    const setOpen = (target: HTMLElement | null) =>
+      cards.forEach((c) => {
+        const on = c === target;
+        c.classList.toggle('is-open', on);
+        c.querySelector('[data-project-toggle]')!.setAttribute('aria-expanded', String(on));
+      });
+
+    /**
+     * Desktop: only the card's outline animates (Flip on width/height/position).
+     * Everything inside is frozen at its *final* size first, so the screenshot never
+     * shrinks/grows and text never re-wraps mid-animation — the card just reveals or
+     * tucks away content. Details fade in after opening and out before closing.
+     */
+    const flipTo = (target: HTMLElement | null, targetIndex: number) => {
+      busy = true;
+      const state = Flip.getState(cards);
+      grid.classList.add('is-flipping');
+      setOpen(target);
+      arrange(targetIndex);
+      // freeze internal layout at the final size
+      cards.forEach((c, i) => {
+        if (c === target) c.style.gridTemplateColumns = getComputedStyle(c).gridTemplateColumns;
+        heads[i].style.width = `${heads[i].offsetWidth}px`;
+      });
+      const done = () => {
+        grid.classList.remove('is-flipping');
+        cards.forEach((c, i) => {
+          c.style.gridTemplateColumns = '';
+          heads[i].style.width = '';
+          inners[i].style.opacity = '';
+        });
+        busy = false;
+        ScrollTrigger.refresh();
+      };
+      Flip.from(state, { duration: 0.65, ease: 'power3.inOut', onComplete: done, onInterrupt: done });
+      if (target) {
+        inners[targetIndex].style.opacity = '0';
+        gsap.to(inners[targetIndex], { opacity: 1, duration: 0.35, delay: 0.3 });
+      }
+    };
+
     cards.forEach((card, index) => {
       const btn = card.querySelector<HTMLButtonElement>('[data-project-toggle]')!;
       btn.addEventListener('click', () => {
+        if (busy) return;
         const opening = !card.classList.contains('is-open');
-        // phones (one column): just the native slide-open — no Flip layer on top, which
-        // fought the CSS transition and made opening slow and flickery
-        const useFlip = !reduced && columns() > 1;
-        const state = useFlip ? Flip.getState(cards) : null;
-        if (useFlip) grid.classList.add('is-flipping');
-        cards.forEach((c) => {
-          const on = c === card && opening;
-          c.classList.toggle('is-open', on);
-          c.querySelector('[data-project-toggle]')!.setAttribute('aria-expanded', String(on));
-        });
-        arrange(opening ? index : -1);
-        if (state) {
-          Flip.from(state, {
-            duration: 0.7,
-            ease: 'power3.inOut',
-            nested: true,
-            onComplete: () => {
-              grid.classList.remove('is-flipping');
-              ScrollTrigger.refresh();
-            },
-          });
-        } else {
-          // refresh pinned sections once the slide-open has finished
+        const target = opening ? card : null;
+
+        // phones (one column): just the native slide-open — no Flip layer
+        if (reduced || columns() < 2) {
+          setOpen(target);
+          arrange(opening ? index : -1);
           setTimeout(() => ScrollTrigger.refresh(), 650);
+          return;
         }
+
+        const current = cards.findIndex((c) => c.classList.contains('is-open'));
+        if (current >= 0) {
+          // fade the open card's details out first, then collapse/move
+          gsap.to(inners[current], {
+            opacity: 0,
+            duration: 0.15,
+            ease: 'power1.out',
+            onComplete: () => flipTo(target, opening ? index : -1),
+          });
+        } else flipTo(target, index);
       });
     });
 
