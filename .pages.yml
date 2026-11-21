@@ -173,6 +173,54 @@ content:
         description: Lower numbers show first in the filter bar.
         type: number
 
+  # ───────────────────────────── SaaS projects (home page)
+  - name: projects
+    label: SaaS projects
+    type: file
+    path: src/content/projects.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Project name
+        type: string
+        required: true
+      - name: kind
+        label: Type (small line under the name)
+        description: e.g. "Prep tracker · Web app"
+        type: string
+      - name: oneLiner
+        label: One-liner
+        description: Shown on the card before it's opened.
+        type: text
+      - name: image
+        label: Screenshot
+        description: A wide screenshot works best (about 16:10).
+        type: image
+        options:
+          media: images
+          path: src/assets/uploads/projects
+      - name: url
+        label: Live link
+        description: Opens from the "Open …" button. Leave empty to hide the button.
+        type: string
+      - name: description
+        label: Description
+        description: Shown when the card is expanded.
+        type: text
+      - name: features
+        label: Features
+        type: string
+        list: true
+      - name: builtFor
+        label: Built for
+        description: e.g. "UGC creators & influencers"
+        type: string
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+
   # ───────────────────────────── Testimonials
   - name: testimonials
     label: Testimonials

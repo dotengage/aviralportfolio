@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { projects } from '../data/projects';
+import { projects, displayUrl } from '../data/projects';
 import Icon from './Icon.astro';
 ---
 
@@ -19,18 +19,24 @@ import Icon from './Icon.astro';
               <span />
               <span />
               <span />
-              <em>{new URL(p.url).host + new URL(p.url).pathname}</em>
+              <em>{p.url ? displayUrl(p.url) : p.name}</em>
             </div>
-            <Image
-              src={p.image}
-              alt={`${p.name} dashboard screenshot`}
-              widths={[480, 800]}
-              sizes="(max-width: 760px) 92vw, 46vw"
-              loading={i === 0 ? 'eager' : 'lazy'}
-            />
+            {p.image ? (
+              <Image
+                src={p.image}
+                alt={`${p.name} screenshot`}
+                widths={[480, 800]}
+                sizes="(max-width: 760px) 92vw, 46vw"
+                loading={i === 0 ? 'eager' : 'lazy'}
+              />
+            ) : (
+              <div class="project__ph ph">
+                <span>{p.name}</span>
+              </div>
+            )}
           </div>
           <div class="project__meta">
-            <span class="project__num">0{i + 1}</span>
+            <span class="project__num">{String(i + 1).padStart(2, '0')}</span>
             <div class="project__titles">
               <h3 class="project__name">{p.name}</h3>
               <p class="project__kind">{p.kind}</p>
@@ -46,15 +52,19 @@ import Icon from './Icon.astro';
           <div class="project__inner">
             <div class="project__cols">
               <div>
-                <p class="project__desc">{p.description}</p>
-                <p class="project__for">
-                  <strong>Built for</strong> {p.builtFor}
-                </p>
-                <div class="project__tags">
-                  {p.tags.map((t) => (
-                    <span class="tag">{t}</span>
-                  ))}
-                </div>
+                {p.description && <p class="project__desc">{p.description}</p>}
+                {p.builtFor && (
+                  <p class="project__for">
+                    <strong>Built for</strong> {p.builtFor}
+                  </p>
+                )}
+                {p.tags.length > 0 && (
+                  <div class="project__tags">
+                    {p.tags.map((t) => (
+                      <span class="tag">{t}</span>
+                    ))}
+                  </div>
+                )}
               </div>
               <ul class="project__features">
                 {p.features.map((f) => (
@@ -62,9 +72,11 @@ import Icon from './Icon.astro';
                 ))}
               </ul>
             </div>
-            <a class="btn" href={p.url} target="_blank" rel="noopener">
-              Open {p.name} <Icon name="arrow" size={16} class="arrow" />
-            </a>
+            {p.url && (
+              <a class="btn" href={p.url} target="_blank" rel="noopener">
+                Open {p.name} <Icon name="arrow" size={16} class="arrow" />
+              </a>
+            )}
           </div>
         </div>
       </article>
@@ -114,6 +126,15 @@ import Icon from './Icon.astro';
   }
   .project:hover .project__shot img {
     transform: scale(1.03);
+  }
+  .project__ph {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
   }
   .project.is-open .project__shot img {
     aspect-ratio: 16 / 7;

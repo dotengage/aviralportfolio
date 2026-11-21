@@ -10,6 +10,7 @@ import Cta from '../components/Cta.astro';
 import CaseDialog from '../components/CaseDialog.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
+import { projects } from '../data/projects';
 
 const name = "I'M AVIRAL";
 ---
@@ -66,16 +67,20 @@ const name = "I'M AVIRAL";
     <Stats />
   </section>
 
-  <section class="section wrap" aria-labelledby="projects-title">
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">Things I've built</span>
-        <h2 class="h-section" id="projects-title">SaaS side projects</h2>
-      </div>
-      <p class="lede">Small products I designed and shipped. Tap one to see what it does, then take it for a spin.</p>
-    </div>
-    <Projects />
-  </section>
+  {
+    projects.length > 0 && (
+      <section class="section wrap" aria-labelledby="projects-title">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Things I've built</span>
+            <h2 class="h-section" id="projects-title">SaaS side projects</h2>
+          </div>
+          <p class="lede">Small products I designed and shipped. Tap one to see what it does, then take it for a spin.</p>
+        </div>
+        <Projects />
+      </section>
+    )
+  }
 
   <WorkRail />
   <Testimonials />

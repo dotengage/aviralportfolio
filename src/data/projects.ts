@@ -1,5 +1,6 @@
-import catMonitor from '../assets/projects/cat-monitor.jpg';
-import creatorOs from '../assets/projects/creator-os.jpg';
+/** SaaS projects on the home page — edited in the dashboard (src/content/projects.json). */
+import raw from '../content/projects.json';
+import { media } from '../lib/media';
 
 export interface Project {
   slug: string;
@@ -10,49 +11,55 @@ export interface Project {
   features: string[];
   builtFor: string;
   url: string;
-  image: ImageMetadata;
+  image?: ImageMetadata;
   tags: string[];
 }
 
-export const projects: Project[] = [
-  {
-    slug: 'cat-monitor',
-    name: 'CAT Monitor',
-    kind: 'Prep tracker · Web app',
-    oneLiner: 'An honest planner for CAT aspirants that tells you whether your target is actually feasible.',
-    description:
-      'Set a target percentile and exam date. CAT Monitor maps your real capacity — college or work hours, energy, commitments and a buffer for real life — then builds one week at a time instead of a fictional 60-day timetable. It watches your mocks and logs, and flags the gap between the hours you need and the hours you actually have.',
-    features: [
-      '6-step setup: goal, commitments, available time, energy, baseline, confirm',
-      'Weekly outcomes at ~75% of realistic capacity, not a fantasy schedule',
-      'Feasibility engine + workload model that calls out shortfalls early',
-      'Mocks, error log, section analytics and CAT readiness',
-      'Streaks, habits and a weekly review loop',
-      'No account — restore your data on another device',
-    ],
-    builtFor: 'CAT aspirants juggling college or work',
-    url: 'https://dotengage.github.io/cat-monitor/#/home',
-    image: catMonitor,
-    tags: ['Planning', 'EdTech', 'Analytics'],
-  },
-  {
-    slug: 'creator-os',
-    name: 'Creator OS',
-    kind: 'Creator business OS · Web app',
-    oneLiner: 'Deals, invoices, money, ideas and your content calendar — in one place.',
-    description:
-      'A command centre for creators who run their content like a business. Log who reached out and what you quoted, raise invoices from templates and export clean PDFs, see what is collected vs. still to come, dump half-formed ideas and plan what goes live — all on your device, no account needed.',
-    features: [
-      'Brand-deal pipeline: contacted → negotiating → delivered',
-      'Invoice templates, PDF export and overdue tracking',
-      'Earnings view: collected, yet to come, expenses',
-      'Content planner + idea dump + inspiration library',
-      'Goals that watch your pace (e.g. Instagram to 100K)',
-      'Explore instantly with sample data',
-    ],
-    builtFor: 'UGC creators & influencers',
-    url: 'https://dotengage.github.io/creator-os/#/',
-    image: creatorOs,
-    tags: ['Creator economy', 'Finance', 'Productivity'],
-  },
-];
+type RawProject = Partial<Record<'name' | 'kind' | 'oneLiner' | 'description' | 'builtFor' | 'url' | 'image', string>> & {
+  features?: string[] | null;
+  tags?: string[] | null;
+};
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '') || 'project';
+
+const seen = new Set<string>();
+
+/** "dotengage.in/app" → "https://dotengage.in/app"; also the short form shown in the fake browser bar */
+const normaliseUrl = (u = '') => {
+  const s = u.trim();
+  if (!s) return '';
+  return /^https?:\/\//i.test(s) ? s : `https://${s}`;
+};
+export const displayUrl = (u: string) => {
+  try {
+    const { host, pathname } = new URL(u);
+    return host + (pathname === '/' ? '' : pathname);
+  } catch {
+    return u;
+  }
+};
+
+export const projects: Project[] = (raw as RawProject[])
+  .filter((p) => p.name?.trim())
+  .map((p) => {
+    // unique, stable id for the expand/collapse controls
+    let slug = slugify(p.name!);
+    while (seen.has(slug)) slug += '-2';
+    seen.add(slug);
+    return {
+      slug,
+      name: p.name!.trim(),
+      kind: p.kind?.trim() ?? '',
+      oneLiner: p.oneLiner?.trim() ?? '',
+      description: p.description?.trim() ?? '',
+      features: (p.features ?? []).map((f) => f.trim()).filter(Boolean),
+      builtFor: p.builtFor?.trim() ?? '',
+      url: normaliseUrl(p.url),
+      image: media(p.image),
+      tags: (p.tags ?? []).map((t) => t.trim()).filter(Boolean),
+    };
+  });
