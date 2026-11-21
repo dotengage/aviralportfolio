@@ -101,7 +101,28 @@ import Icon from './Icon.astro';
     box-shadow: 0 0 0 1.5px var(--line);
   }
   .project.is-open {
+    grid-column: 1 / -1;
     box-shadow: 0 0 0 1.5px var(--text);
+  }
+  /* wide screens: the opened card spans the row — screenshot stays its normal size on the left
+     (so it never gets upscaled/blurry), details fill the right */
+  @media (min-width: 761px) {
+    .project.is-open {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .project.is-open .project__body {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .project.is-open .project__inner {
+      padding: clamp(14px, 2vw, 22px) clamp(14px, 2vw, 22px) clamp(14px, 2vw, 22px) 0;
+    }
+    .project.is-open .project__cols {
+      padding-top: 0;
+      border-top: 0;
+    }
   }
   .project__head {
     display: block;
@@ -268,21 +289,50 @@ import Icon from './Icon.astro';
 </style>
 
 <script>
-  import { ScrollTrigger } from '../scripts/motion';
+  import { gsap, ScrollTrigger, reduced } from '../scripts/motion';
+  import { Flip } from 'gsap/Flip';
+  gsap.registerPlugin(Flip);
 
-  // each card expands downward in place — no reordering, no resizing the screenshot
+  /**
+   * One card open at a time. The opened card spans the full row *in its own row*:
+   * if it sits on the right, its row-mate drops below it instead of the opened card
+   * jumping anywhere. Flip animates the change.
+   */
   document.querySelectorAll<HTMLElement>('[data-projects]').forEach((grid) => {
-    grid.querySelectorAll<HTMLElement>('[data-project]').forEach((card) => {
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-project]')];
+    const columns = () => getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+
+    const arrange = (openIndex: number) => {
+      const cols = columns();
+      cards.forEach((c, i) => (c.style.order = String(i * 2)));
+      if (openIndex < 0 || cols < 2) return;
+      const col = openIndex % cols;
+      // move the opened card to the start of its row; the cards before it in that row follow it
+      if (col > 0) cards[openIndex].style.order = String((openIndex - col) * 2 - 1);
+    };
+
+    cards.forEach((card, index) => {
       const btn = card.querySelector<HTMLButtonElement>('[data-project-toggle]')!;
-      const body = card.querySelector<HTMLElement>('.project__body')!;
       btn.addEventListener('click', () => {
-        const open = card.classList.toggle('is-open');
-        btn.setAttribute('aria-expanded', String(open));
-      });
-      // the page got taller/shorter → keep the pinned sections below in the right place
-      body.addEventListener('transitionend', (e) => {
-        if (e.propertyName === 'grid-template-rows') ScrollTrigger.refresh();
+        const opening = !card.classList.contains('is-open');
+        const state = reduced ? null : Flip.getState(cards);
+        cards.forEach((c) => {
+          const on = c === card && opening;
+          c.classList.toggle('is-open', on);
+          c.querySelector('[data-project-toggle]')!.setAttribute('aria-expanded', String(on));
+        });
+        arrange(opening ? index : -1);
+        if (state) {
+          Flip.from(state, {
+            duration: 0.7,
+            ease: 'power3.inOut',
+            nested: true,
+            onComplete: () => ScrollTrigger.refresh(),
+          });
+        } else ScrollTrigger.refresh();
       });
     });
+
+    addEventListener('resize', () => arrange(cards.findIndex((c) => c.classList.contains('is-open'))));
   });
 </script>
