@@ -16,6 +16,7 @@ Every save commits to `main`, and the site redeploys in about a minute.
 | Dashboard section | Stored in |
 | --- | --- |
 | Case studies (rich text, cover, gallery, YouTube Shorts, results, show-on-home, draft) | `src/content/cases/*.md` |
+| SaaS projects (home page) | `src/content/projects.json` |
 | Testimonials | `src/content/testimonials.json` |
 | Brand logos | `src/content/brands.json` |
 | About & experience (bio, photos, timeline, roles, education, skills, certifications, posts) | `src/content/about.json` |
@@ -24,8 +25,7 @@ Every save commits to `main`, and the site redeploys in about a minute.
 Uploaded images go to `src/assets/uploads/` and are optimised (WebP, responsive sizes) at build time.
 The dashboard is configured in `.pages.yml`.
 
-Still in code: site basics (`src/data/site.ts`), SaaS projects (`src/data/projects.ts`), homepage stats and
-languages (`src/data/experience.ts`).
+Still in code: site basics (`src/data/site.ts`) and the homepage stats (`src/data/experience.ts`).
 
 ## Contact form
 
