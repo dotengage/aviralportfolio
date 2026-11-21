@@ -97,8 +97,13 @@ import Icon from './Icon.astro';
     overflow: hidden;
     transition: box-shadow 0.4s var(--ease);
   }
-  .project:hover {
-    box-shadow: 0 0 0 1.5px var(--line);
+  @media (hover: hover) {
+    .project:hover {
+      box-shadow: 0 0 0 1.5px var(--line);
+    }
+    .project:hover .project__shot img {
+      transform: scale(1.03);
+    }
   }
   .project.is-open {
     grid-column: 1 / -1;
@@ -129,6 +134,9 @@ import Icon from './Icon.astro';
     width: 100%;
     text-align: left;
     padding: clamp(14px, 2vw, 22px);
+    /* iOS paints a dark flash over tapped buttons — the whole card head is one */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .project__shot {
     border-radius: 12px;
@@ -143,9 +151,6 @@ import Icon from './Icon.astro';
     object-fit: cover;
     object-position: top left;
     transition: transform 0.9s var(--ease);
-  }
-  .project:hover .project__shot img {
-    transform: scale(1.03);
   }
   .project__ph {
     display: grid;
@@ -234,6 +239,10 @@ import Icon from './Icon.astro';
   .project.is-open .project__body {
     grid-template-rows: 1fr;
   }
+  /* while the desktop Flip animation runs, it owns the motion — no second CSS transition */
+  .projects.is-flipping .project__body {
+    transition: none;
+  }
   .project__inner {
     overflow: hidden;
     padding-inline: clamp(14px, 2vw, 22px);
@@ -315,7 +324,11 @@ import Icon from './Icon.astro';
       const btn = card.querySelector<HTMLButtonElement>('[data-project-toggle]')!;
       btn.addEventListener('click', () => {
         const opening = !card.classList.contains('is-open');
-        const state = reduced ? null : Flip.getState(cards);
+        // phones (one column): just the native slide-open — no Flip layer on top, which
+        // fought the CSS transition and made opening slow and flickery
+        const useFlip = !reduced && columns() > 1;
+        const state = useFlip ? Flip.getState(cards) : null;
+        if (useFlip) grid.classList.add('is-flipping');
         cards.forEach((c) => {
           const on = c === card && opening;
           c.classList.toggle('is-open', on);
@@ -327,9 +340,15 @@ import Icon from './Icon.astro';
             duration: 0.7,
             ease: 'power3.inOut',
             nested: true,
-            onComplete: () => ScrollTrigger.refresh(),
+            onComplete: () => {
+              grid.classList.remove('is-flipping');
+              ScrollTrigger.refresh();
+            },
           });
-        } else ScrollTrigger.refresh();
+        } else {
+          // refresh pinned sections once the slide-open has finished
+          setTimeout(() => ScrollTrigger.refresh(), 650);
+        }
       });
     });
 
